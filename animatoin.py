@@ -56,17 +56,18 @@ class AnimatedSprite(pygame.sprite.Sprite):
 
     def update(self):
         self.cur_frame = (self.cur_frame + 1) % len(self.frames)
-        self.image = self.frames[self.cur_frame]
+        self.image = pygame.transform.scale(self.frames[self.cur_frame], (19*4, 24*4))
 
 
 if __name__ == '__main__' and start:
     running = True
     k = 1
     all_sprites = pygame.sprite.Group()
-    dragon = AnimatedSprite(load_image("animation/idle_with_weapon/front.png"), 6, 1, 50, 50)
+    dragon = AnimatedSprite(load_image("animation/walking_with_weapon/front.png"), 6, 1, 50, 50)
     size = height, weight = 500, 500
     screen = pygame.display.set_mode(size)
     screen.fill(pygame.Color('black'))
+    all_sprites.update()
     while running:
         screen.fill(pygame.Color('black'))
         for event in pygame.event.get():
