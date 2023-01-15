@@ -117,6 +117,12 @@ class Player:
             self.prev_sprite = n
 
     def update(self, *args):
+        if 's' in args[0] and 'w' in args[0]:
+            del args[0][args[0].index('w')]
+            del args[0][args[0].index('s')]
+        if 'a' in args[0] and 'd' in args[0]:
+            del args[0][args[0].index('a')]
+            del args[0][args[0].index('d')]
         if not self.roll and not self.direction:
             if "space" in args[0]:
                 self.roll = 56
@@ -194,7 +200,7 @@ if __name__ == '__main__' and start:
     k = 1
     all_sprites = pygame.sprite.Group()
     player = Player(50, 50)
-    size = height, weight = 1000, 1000
+    size = height, weight = 500, 500
     screen = pygame.display.set_mode(size)
     screen.fill(pygame.Color('white'))
     all_sprites.update()
