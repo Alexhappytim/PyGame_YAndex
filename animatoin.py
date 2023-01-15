@@ -16,6 +16,37 @@ all_sprites = pygame.sprite.Group()
 tiles_group = pygame.sprite.Group()
 player_group = pygame.sprite.Group()
 
+# курсор вот так вот смешно делается
+crosshair = (
+    "      XXXXXXXXXX        ",
+    "      XXXXXXXXXX        ",
+    "    XX..........XX      ",
+    "    XX..........XX      ",
+    "  XX..XXXX..XXXX..XX    ",
+    "  XX..XXXX..XXXX..XX    ",
+    "XX..XX    XX    XX..XX  ",
+    "XX..XX    XX    XX..XX  ",
+    "XX..XX    XX    XX..XX  ",
+    "XX..XX    XX    XX..XX  ",
+    "XX....XXXX  XXXX....XX  ",
+    "XX....XXXX  XXXX....XX  ",
+    "XX..XX    XX    XX..XX  ",
+    "XX..XX    XX    XX..XX  ",
+    "XX..XX    XX    XX..XX  ",
+    "XX..XX    XX    XX..XX  ",
+    "  XX..XXXX..XXXX..XX    ",
+    "  XX..XXXX..XXXX..XX    ",
+    "    XX..........XX      ",
+    "    XX..........XX      ",
+    "      XXXXXXXXXX        ",
+    "      XXXXXXXXXX        ",
+    "                        ",
+    "                        ",
+)
+
+cursor = pygame.cursors.compile(crosshair)
+pygame.mouse.set_cursor((24, 24), (0, 0), *cursor)
+
 
 def load_image(name, colorkey=None):
     fullname = os.path.join('data', name)
@@ -104,7 +135,7 @@ class Player:
         # walk_w walk_a walk_s walk_d
         self.prev_sprite = 2
         self.set_sprite(2)
-        self.speed = 3
+        self.speed = 4
         self.roll = 0
         self.direction = None
 
@@ -200,7 +231,7 @@ if __name__ == '__main__' and start:
     k = 1
     all_sprites = pygame.sprite.Group()
     player = Player(50, 50)
-    size = height, weight = 500, 500
+    size = height, weight = 1000, 1000
     screen = pygame.display.set_mode(size)
     screen.fill(pygame.Color('white'))
     all_sprites.update()
