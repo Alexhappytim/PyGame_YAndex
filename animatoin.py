@@ -76,7 +76,7 @@ def load_image(name, colorkey=None):
 
 
 class AnimatedSprite(pygame.sprite.Sprite):
-    def __init__(self, sheet, columns, rows, x, y, flipped=False):
+    def __init__(self, sheet, columns, rows, x, y, flipped=False, offset_x=0, offset_y=0):
         super().__init__(all_sprites)
         self.visible = True
         self.frames = []
@@ -86,6 +86,10 @@ class AnimatedSprite(pygame.sprite.Sprite):
         self.freq = 0
         self.image = self.frames[self.cur_frame]
         self.rect = self.rect.move(x, y)
+        self.rect = self.image.get_rect(center=(x, y))
+        # служебные переменные для вращения
+        self.pos = pygame.math.Vector2((x, y))
+        self.offset = pygame.math.Vector2(offset_x, offset_y)
         self.angle = 0
 
     def cut_sheet(self, sheet, columns, rows):
@@ -94,19 +98,33 @@ class AnimatedSprite(pygame.sprite.Sprite):
         for j in range(rows):
             for i in range(columns):
                 frame_location = (self.rect.w * i, self.rect.h * j)
-                self.frames.append(pygame.transform.flip(sheet.subsurface(pygame.Rect(
-                    frame_location, self.rect.size)), self.flipped1, False))
+                self.frames.append(
+                    pygame.transform.scale(pygame.transform.flip(sheet.subsurface(pygame.Rect(
+                        frame_location, self.rect.size)), self.flipped1, False),
+                        (self.rect.width * 3, self.rect.height * 3)))
+
+    def rotate(self):
+        """Rotate the image of the sprite around a pivot point."""
+        # Rotate the image.
+        self.image = pygame.transform.rotozoom(self.frames[self.cur_frame], -self.angle, 1)
+
+        # self.image = pygame.transform.scale(self.frames[self.cur_frame],
+        #                                     (self.rect.width * 3, self.rect.height * 3))
+        # Rotate the offset vector.
+        offset_rotated = self.offset.rotate(self.angle)
+        # Create a new rect with the center of the sprite + the offset.
+        self.rect = self.image.get_rect(center=self.pos + offset_rotated)
 
     def update(self):
         if self.visible:
+
             if self.freq == 6:
                 self.cur_frame = (self.cur_frame + 1) % len(self.frames)
-                self.image = pygame.transform.scale(self.frames[self.cur_frame],
-                                                    (self.rect.width * 3, self.rect.height * 3))
-                self.image = pygame.transform.rotate(self.image, self.angle)
                 self.freq = 0
             else:
                 self.freq += 1
+
+            self.rotate()
         else:
             self.freq = 6
             self.image = load_image("animation/None.png")
@@ -114,19 +132,20 @@ class AnimatedSprite(pygame.sprite.Sprite):
 
 class Gun:
     def __init__(self, pos_x, pos_y):
-        self.x = pos_x + 37
-        self.y = pos_y + 45
-        self.gun_x = pos_x + 33
-        self.gun_y = pos_y + 34
+        self.delta = [22, 15, 22, 15]
+        self.x = pos_x + self.delta[0]
+        self.y = pos_y + self.delta[1]
+        self.gun_x = pos_x + self.delta[2]
+        self.gun_y = pos_y + self.delta[3]
         self.cur_sprite = 0
         self.frame = 0
         self.gun_sprite = [
             AnimatedSprite(load_image("animation/guns/uzi/uzi_idle_001.png"), 1, 1, self.gun_x,
-                           self.gun_y),
+                           self.gun_y, offset_x=10),
             AnimatedSprite(load_image("animation/guns/uzi/uzi_shoot_001.png"), 1, 1, self.gun_x,
-                           self.gun_y),
+                           self.gun_y, offset_x=10),
             AnimatedSprite(load_image("animation/guns/uzi/uzi_reload_001.png"), 1, 1, self.gun_x,
-                           self.gun_y)
+                           self.gun_y, offset_x=10)
         ]
         self.hand_sprite = AnimatedSprite(load_image("animation/guns/hand.png"), 1, 1, self.gun_x,
                                           self.gun_y)
@@ -157,26 +176,25 @@ class Gun:
         else:
             self.hand_sprite.visible = True
             self.set_sprite(self.cur_sprite)
+            x1, y1 = pygame.mouse.get_pos()
+            dx = x1+12 - self.x
+            dy = y1+12 - self.y
+            angle = math.degrees(math.atan2(-dy, dx) % (2 * math.pi))
             for i in self.gun_sprite:
-                a, b = pygame.mouse.get_pos()
-                if (b - self.y) != 0:
-                    angle = math.asin((a - self.x) / ((b - self.y) ** 2 + (a - self.x) ** 2) ** (
-                                1 / 2)) / math.pi * 180
-                    i.angle = angle
-                    print(angle)
+                i.angle = -angle
+            self.hand_sprite.angle = -angle
 
-            self.x = x + 37
-            self.y = y + 45
-            self.gun_x = x + 33
-            self.gun_y = y + 34
-            self.hand_sprite.rect.x = self.x
-            self.hand_sprite.rect.y = self.y
+            self.x = x + self.delta[0]
+            self.y = y + self.delta[1]
+            self.gun_x = x + self.delta[2]
+            self.gun_y = y + self.delta[3]
+            self.hand_sprite.pos = (self.x, self.y)
             for i in self.gun_sprite:
-                i.rect.x = self.gun_x
-                i.rect.y = self.gun_y
+                i.pos = (self.gun_x, self.gun_y)
 
 
 class Player:
+
     def __init__(self, pos_x, pos_y):
         self.x = pos_x
         self.y = pos_y
@@ -224,7 +242,6 @@ class Player:
         self.direction = None
         self.gun = Gun(self.x, self.y)
 
-    #
     def set_sprite(self, n):
         for i in self.sprite:
             i.visible = False
@@ -233,7 +250,11 @@ class Player:
             self.prev_sprite = n
 
     def update(self, *args):
-
+        # TODO x1, y1 = pygame.mouse.get_pos()
+        #             dx = x1+12 - self.x
+        #             dy = y1+12 - self.y
+        #             angle = math.degrees(math.atan2(-dy, dx) % (2 * math.pi))
+        #             Слежка игрока за мышью, как и пушка
         if 's' in args[0] and 'w' in args[0]:
             del args[0][args[0].index('w')]
             del args[0][args[0].index('s')]
@@ -302,17 +323,15 @@ class Player:
                         self.set_sprite(11)
 
                 for i in self.sprite:
-                    i.rect.x = self.x
-                    i.rect.y = self.y
+                    i.pos = (self.x, self.y)
         else:
-            # TODO Баг - противоположные кнопки
+
             koef = 1
 
             if len(self.direction) > 2:
-                koef = koef * 3 / (4)
+                koef = koef * 3 / 4
             if "s" in self.direction:
                 self.y += int(self.speed * koef)
-                # print(koef, self.speed, int(self.speed * koef), self.direction)
             if "a" in self.direction:
                 self.x -= int(self.speed * koef)
             if "d" in self.direction:
@@ -320,8 +339,7 @@ class Player:
             if "w" in self.direction:
                 self.y -= int(self.speed * koef)
             for i in self.sprite:
-                i.rect.x = self.x
-                i.rect.y = self.y
+                i.pos = (self.x, self.y)
             self.roll -= 1
             if self.roll == 0:
                 self.direction = None
@@ -358,8 +376,9 @@ if __name__ == '__main__' and start:
             ar.append("space")
         if pygame.mouse.get_pressed()[0]:
             ar.append("LMB")
+        # pygame.draw.circle(screen, (255, 128, 0), [int(i) for i in player.gun.gun_sprite[0].pos], 3)
+        # pygame.draw.circle(screen, (255, 0, 0), [int(i) for i in player.gun.hand_sprite.pos], 3)
         player.update(ar)
-        # player.sprite.update()
         clock.tick(FPS)
         pygame.display.flip()
 else:
