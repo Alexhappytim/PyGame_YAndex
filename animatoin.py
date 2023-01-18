@@ -56,12 +56,27 @@ def rot_center(image, rect, angle):
     return rot_image, rot_rect
 
 
-def load_image(name, colorkey=None):
+def load_image(name, front=1, colorkey=None):
     fullname = os.path.join('data', name)
     # если файл не существует, то выходим
     if not os.path.isfile(fullname):
         print(f"Файл с изображением '{fullname}' не найден")
         sys.exit()
+    if front == 0:
+        fullname_new = '.'.join(i for i in fullname.split('.')[:-1]) + '#.' + fullname.split('.')[-1]
+        if not os.path.isfile(fullname_new):
+            with open(fullname, 'rb') as f:
+                print(f.readlines())
+            img = Image.open(fullname).convert('RGBA')
+            pixdata = img.load()
+            for y in range(img.size[1]):
+                for x in range(img.size[0]):
+                    alpha = pixdata[x, y][3]
+                    if alpha:
+                        pixdata[x, y] = (0, 0, 0, alpha)
+            img.save(fullname_new)
+            img.close()
+        fullname = fullname_new
     image = pygame.image.load(fullname)
     if colorkey is not None:
         image = image.convert()
