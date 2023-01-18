@@ -89,7 +89,7 @@ class AnimatedSprite(pygame.sprite.Sprite):
         self.rect = self.rect.move(x, y)
         self.rect = self.image.get_rect(center=(x, y))
         # служебные переменные для вращения
-        self.pos = pygame.math.Vector2((x, y))
+        self.pos = pygame.math.Vector2(x, y)
         self.offset = pygame.math.Vector2(offset_x, offset_y)
         self.angle = 0
 
@@ -116,17 +116,15 @@ class AnimatedSprite(pygame.sprite.Sprite):
         offset_rotated = self.offset.rotate(self.angle)
         # Create a new rect with the center of the sprite + the offset.
         self.rect = self.image.get_rect(center=self.pos + offset_rotated)
-        print(self.angle)
 
     def update(self):
         if self.visible:
-
+            # Менять фреймрейт анимации в зависимости от колва кадров
             if self.freq == 6:
                 self.cur_frame = (self.cur_frame + 1) % len(self.frames)
                 self.freq = 0
             else:
                 self.freq += 1
-
             self.rotate()
         else:
             self.freq = 6
@@ -135,7 +133,7 @@ class AnimatedSprite(pygame.sprite.Sprite):
 
 class Gun:
     def __init__(self, pos_x, pos_y):
-        self.delta = [22, 15]
+        self.delta = [0, 15]
         self.x = pos_x + self.delta[0]
         self.y = pos_y + self.delta[1]
         self.gun_x = pos_x + self.delta[0]
@@ -144,14 +142,14 @@ class Gun:
         self.frame = 0
         self.gun_sprite = [
             AnimatedSprite(load_image("animation/guns/uzi/uzi_idle_001.png"), 1, 1, self.gun_x,
-                           self.gun_y, offset_x=10),
+                           self.gun_y, offset_x=50),
             AnimatedSprite(load_image("animation/guns/uzi/uzi_shoot_001.png"), 1, 1, self.gun_x,
-                           self.gun_y, offset_x=10),
+                           self.gun_y, offset_x=50),
             AnimatedSprite(load_image("animation/guns/uzi/uzi_reload_001.png"), 1, 1, self.gun_x,
-                           self.gun_y, offset_x=10)
+                           self.gun_y, offset_x=50)
         ]
         self.hand_sprite = AnimatedSprite(load_image("animation/guns/hand.png"), 1, 1, self.gun_x,
-                                          self.gun_y)
+                                          self.gun_y, offset_x=40)
         self.set_sprite(0)
 
     def set_sprite(self, n):
@@ -184,10 +182,10 @@ class Gun:
             dy = y1 + 12 - self.y
             angle = math.degrees(math.atan2(-dy, dx) % (2 * math.pi))
             for i in self.gun_sprite:
-                if 90 <= abs(angle)+5 <= 270:
-                    self.delta[0] = -20
-                else:
-                    self.delta[0] = 22
+                # if 90 <= abs(angle)+5 <= 270:
+                #     self.delta[0] = -20
+                # else:
+                #     self.delta[0] = 22
                 i.angle = -angle
                 i.rot_flip = 90 <= abs(angle) <= 270
             self.hand_sprite.angle = -angle
@@ -196,9 +194,9 @@ class Gun:
             self.y = y + self.delta[1]
             self.gun_x = x + self.delta[0]
             self.gun_y = y + self.delta[1]
-            self.hand_sprite.pos = (self.x, self.y)
+            self.hand_sprite.pos = pygame.math.Vector2(self.x, self.y)
             for i in self.gun_sprite:
-                i.pos = (self.gun_x, self.gun_y)
+                i.pos = pygame.math.Vector2(self.gun_x, self.gun_y)
 
 
 class Player:
@@ -254,8 +252,9 @@ class Player:
         for i in self.sprite:
             i.visible = False
         self.sprite[n].visible = True
-        if n < 12:
-            self.prev_sprite = n
+        # if n < 12:
+        self.prev_sprite = n
+        print(self.prev_sprite)
 
     def update(self, *args):
         # TODO x1, y1 = pygame.mouse.get_pos()
@@ -263,13 +262,18 @@ class Player:
         #             dy = y1+12 - self.y
         #             angle = math.degrees(math.atan2(-dy, dx) % (2 * math.pi))
         #             Слежка игрока за мышью, как и пушка
+
+        # Почистим массив кнопок от противоположных
         if 's' in args[0] and 'w' in args[0]:
             del args[0][args[0].index('w')]
             del args[0][args[0].index('s')]
         if 'a' in args[0] and 'd' in args[0]:
             del args[0][args[0].index('a')]
             del args[0][args[0].index('d')]
+
+        #Развилка, в перекате ли мы
         if not self.roll and not self.direction:
+            # Проверка, войти ли в перекат
             if "space" in args[0] and (
                     "w" in args[0] or "a" in args[0] or "s" in args[0] or "d" in args[0]):
                 self.roll = 56
@@ -293,29 +297,48 @@ class Player:
                     self.set_sprite(14)
             else:
                 koef = 1
+                # Движение
                 if len(args[0]) > 1:
                     koef = 3 / 4
                 if "s" in args[0]:
                     self.y += int(self.speed * koef)
-                    self.set_sprite(2)
+                    #self.set_sprite(2)
                 if "a" in args[0]:
                     self.x -= int(self.speed * koef)
-                    self.set_sprite(1)
+                    #self.set_sprite(1)
 
                 if "d" in args[0]:
                     self.x += int(self.speed * koef)
-                    self.set_sprite(3)
+                    #self.set_sprite(3)
                 if "w" in args[0]:
                     self.y -= int(self.speed * koef)
-                    if "a" in args[0] and "d" in args[0]:
-                        self.set_sprite(0)
-                    elif "a" in args[0]:
-                        self.set_sprite(5)
-                    elif "d" in args[0]:
-                        self.set_sprite(4)
-                    else:
-                        self.set_sprite(0)
 
+                x1, y1 = pygame.mouse.get_pos()
+                dx = x1 + 12 - self.x
+                dy = y1 + 12 - self.y
+                angle = math.degrees(math.atan2(-dy, dx) % (2 * math.pi))
+                if 0 <= angle <= 45:
+                    self.set_sprite(4)
+                elif 45 < angle <= 135:
+                    self.set_sprite(0)
+                elif 135 < angle <= 180:
+                    self.set_sprite(5)
+                elif 180 < angle <= 240:
+                    self.set_sprite(1)
+                elif 240 < angle <= 300:
+                    self.set_sprite(2)
+                elif 300 < angle < 360:
+                    self.set_sprite(3)
+                    # if "a" in args[0] and "d" in args[0]:
+                    #     self.set_sprite(0)
+                    # elif "a" in args[0]:
+                    #     self.set_sprite(5)
+                    # elif "d" in args[0]:
+                    #     self.set_sprite(4)
+                    # else:
+                    #     self.set_sprite(0)
+            # Спрайты на АФК
+                #print(args[0])
                 if not args[0] or (len(args[0]) == 1 and "LMB" in args[0]):
                     if self.prev_sprite == 0 or self.prev_sprite == 12:
                         self.set_sprite(6)
