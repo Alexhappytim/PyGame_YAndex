@@ -80,7 +80,8 @@ class AnimatedSprite(pygame.sprite.Sprite):
         super().__init__(all_sprites)
         self.visible = True
         self.frames = []
-        self.flipped1 = flipped
+        self.flipped = flipped
+        self.rot_flip = False
         self.cut_sheet(sheet, columns, rows)
         self.cur_frame = 0
         self.freq = 0
@@ -100,13 +101,14 @@ class AnimatedSprite(pygame.sprite.Sprite):
                 frame_location = (self.rect.w * i, self.rect.h * j)
                 self.frames.append(
                     pygame.transform.scale(pygame.transform.flip(sheet.subsurface(pygame.Rect(
-                        frame_location, self.rect.size)), self.flipped1, False),
+                        frame_location, self.rect.size)), self.flipped, False),
                         (self.rect.width * 3, self.rect.height * 3)))
 
     def rotate(self):
         """Rotate the image of the sprite around a pivot point."""
         # Rotate the image.
-        self.image = pygame.transform.rotozoom(self.frames[self.cur_frame], -self.angle, 1)
+        self.image = pygame.transform.rotozoom(pygame.transform.flip(self.frames[self.cur_frame], False, self.rot_flip),
+                                               -self.angle, 1)
 
         # self.image = pygame.transform.scale(self.frames[self.cur_frame],
         #                                     (self.rect.width * 3, self.rect.height * 3))
@@ -114,6 +116,7 @@ class AnimatedSprite(pygame.sprite.Sprite):
         offset_rotated = self.offset.rotate(self.angle)
         # Create a new rect with the center of the sprite + the offset.
         self.rect = self.image.get_rect(center=self.pos + offset_rotated)
+        print(self.angle)
 
     def update(self):
         if self.visible:
@@ -132,11 +135,11 @@ class AnimatedSprite(pygame.sprite.Sprite):
 
 class Gun:
     def __init__(self, pos_x, pos_y):
-        self.delta = [22, 15, 22, 15]
+        self.delta = [22, 15]
         self.x = pos_x + self.delta[0]
         self.y = pos_y + self.delta[1]
-        self.gun_x = pos_x + self.delta[2]
-        self.gun_y = pos_y + self.delta[3]
+        self.gun_x = pos_x + self.delta[0]
+        self.gun_y = pos_y + self.delta[1]
         self.cur_sprite = 0
         self.frame = 0
         self.gun_sprite = [
@@ -177,17 +180,22 @@ class Gun:
             self.hand_sprite.visible = True
             self.set_sprite(self.cur_sprite)
             x1, y1 = pygame.mouse.get_pos()
-            dx = x1+12 - self.x
-            dy = y1+12 - self.y
+            dx = x1 + 12 - self.x
+            dy = y1 + 12 - self.y
             angle = math.degrees(math.atan2(-dy, dx) % (2 * math.pi))
             for i in self.gun_sprite:
+                if 90 <= abs(angle)+5 <= 270:
+                    self.delta[0] = -20
+                else:
+                    self.delta[0] = 22
                 i.angle = -angle
+                i.rot_flip = 90 <= abs(angle) <= 270
             self.hand_sprite.angle = -angle
 
             self.x = x + self.delta[0]
             self.y = y + self.delta[1]
-            self.gun_x = x + self.delta[2]
-            self.gun_y = y + self.delta[3]
+            self.gun_x = x + self.delta[0]
+            self.gun_y = y + self.delta[1]
             self.hand_sprite.pos = (self.x, self.y)
             for i in self.gun_sprite:
                 i.pos = (self.gun_x, self.gun_y)
