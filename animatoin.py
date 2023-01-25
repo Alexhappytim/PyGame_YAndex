@@ -419,48 +419,14 @@ class Enemy:
         self.start_x = self.x
         self.start_y = self.y
         self.sprite = [
-            AnimatedSprite(load_image("animation/walking_with_weapon/back.png"), 6, 1, self.x,
+            AnimatedSprite(load_image("animation/enemy/front.png"), 2, 1, self.x,
                            self.y),
-            AnimatedSprite(load_image("animation/walking_with_weapon/front_45.png"), 6, 1, self.x,
-                           self.y,
-                           True),
-            AnimatedSprite(load_image("animation/walking_with_weapon/front.png"), 6, 1, self.x,
-                           self.y),
-            AnimatedSprite(load_image("animation/walking_with_weapon/front_45.png"), 6, 1, self.x,
-                           self.y),
-            AnimatedSprite(load_image("animation/walking_with_weapon/back_45.png"), 6, 1, self.x,
-                           self.y),
-            AnimatedSprite(load_image("animation/walking_with_weapon/back_45.png"), 6, 1, self.x,
-                           self.y,
-                           True),
-
-            AnimatedSprite(load_image("animation/idle_with_weapon/back.png"), 6, 1, self.x, self.y),
-            AnimatedSprite(load_image("animation/idle_with_weapon/front_45.png"), 4, 1, self.x,
-                           self.y,
-                           True),
-            AnimatedSprite(load_image("animation/idle_with_weapon/front.png"), 6, 1, self.x,
-                           self.y),
-            AnimatedSprite(load_image("animation/idle_with_weapon/front_45.png"), 4, 1, self.x,
-                           self.y),
-            AnimatedSprite(load_image("animation/idle_with_weapon/back_45.png"), 4, 1, self.x,
-                           self.y),
-            AnimatedSprite(load_image("animation/idle_with_weapon/back_45.png"), 4, 1, self.x,
-                           self.y,
-                           True),
-
-            AnimatedSprite(load_image("animation/roll/back.png"), 9, 1, self.x, self.y),
-            AnimatedSprite(load_image("animation/roll/front_45.png"), 9, 1, self.x, self.y, True),
-            AnimatedSprite(load_image("animation/roll/front.png"), 9, 1, self.x, self.y),
-            AnimatedSprite(load_image("animation/roll/front_45.png"), 9, 1, self.x, self.y),
-            AnimatedSprite(load_image("animation/roll/back_45.png"), 9, 1, self.x, self.y),
-            AnimatedSprite(load_image("animation/roll/back_45.png"), 9, 1, self.x, self.y, True),
         ]
         self.rect = self.sprite[0].rect.move(self.x, self.y)
         self.prev_sprite = 2
-        self.set_sprite(2)
+        self.set_sprite(0)
         self.speed = 4
-        self.roll = 0
-        self.direction = None
+        self.go = 50
 
     def set_sprite(self, n):
         for i in self.sprite:
@@ -471,73 +437,29 @@ class Enemy:
 
     def update(self, x, y):
         args = [[]]
-        if self.x + 100 < x:
+        if self.x + self.go < x:
             args[0].append('d')
-        elif self.x - 100 > x:
+        elif self.x - self.go > x:
             args[0].append('a')
-        if self.y + 100 < y:
+        if self.y + self.go < y:
             args[0].append('s')
-        elif self.y - 100 > y:
+        elif self.y - self.go > y:
             args[0].append('w')
-        if not self.roll and not self.direction:
-            koef = 1
-            if len(args[0]) > 1:
-                koef = 3 / 4
-            koef *= 0.75
-            if "s" in args[0]:
-                self.y += int(self.speed * koef)
-                self.set_sprite(2)
-            if "a" in args[0]:
-                self.x -= int(self.speed * koef)
-                self.set_sprite(1)
+        koef = 1
+        if len(args[0]) > 1:
+            koef = 3 / 4
+        koef *= 0.75
+        if "s" in args[0]:
+            self.y += int(self.speed * koef)
+        if "a" in args[0]:
+            self.x -= int(self.speed * koef)
+        if "d" in args[0]:
+            self.x += int(self.speed * koef)
+        if "w" in args[0]:
+            self.y -= int(self.speed * koef)
+        for i in self.sprite:
+            i.pos = (self.x, self.y)
 
-            if "d" in args[0]:
-                self.x += int(self.speed * koef)
-                self.set_sprite(3)
-            if "w" in args[0]:
-                self.y -= int(self.speed * koef)
-                if "a" in args[0] and "d" in args[0]:
-                    self.set_sprite(0)
-                elif "a" in args[0]:
-                    self.set_sprite(5)
-                elif "d" in args[0]:
-                    self.set_sprite(4)
-                else:
-                    self.set_sprite(0)
-
-            if not args[0] or (len(args[0]) == 1 and "LMB" in args[0]):
-                if self.prev_sprite == 0 or self.prev_sprite == 12:
-                    self.set_sprite(6)
-                if self.prev_sprite == 1 or self.prev_sprite == 13:
-                    self.set_sprite(7)
-                if self.prev_sprite == 2 or self.prev_sprite == 14:
-                    self.set_sprite(8)
-                if self.prev_sprite == 3 or self.prev_sprite == 15:
-                    self.set_sprite(9)
-                if self.prev_sprite == 4 or self.prev_sprite == 16:
-                    self.set_sprite(10)
-                if self.prev_sprite == 5 or self.prev_sprite == 17:
-                    self.set_sprite(11)
-
-            for i in self.sprite:
-                i.pos = (self.x, self.y)
-        else:
-            koef = 1
-            if len(self.direction) > 2:
-                koef = koef * 3 / 4
-            if "s" in self.direction:
-                self.y += int(self.speed * koef)
-            if "a" in self.direction:
-                self.x -= int(self.speed * koef)
-            if "d" in self.direction:
-                self.x += int(self.speed * koef)
-            if "w" in self.direction:
-                self.y -= int(self.speed * koef)
-            for i in self.sprite:
-                i.pos = (self.x, self.y)
-            self.roll -= 1
-            if self.roll == 0:
-                self.direction = None
         self.rect = pygame.rect.Rect(self.x, self.y, self.rect.w, self.rect.h)
 
 
@@ -564,7 +486,7 @@ if __name__ == '__main__' and start:
     running = True
     k = 1
     enemy = []
-    for i in range(1):
+    for i in range(10):
         enemy.append(Enemy(50, 50))
     player = Player(50, 50)
     screen = pygame.display.set_mode(size)
