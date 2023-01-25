@@ -92,12 +92,12 @@ def load_image(name, front=1, colorkey=None):
 
 
 class AnimatedSprite(pygame.sprite.Sprite):
-    def __init__(self, sheet, columns, rows, x, y, flipped=False, offset_x=0, offset_y=0):
+    def __init__(self, sheet, columns, rows, x, y, flipped=False, offset_x=0, offset_y=0, scale=3):
         super().__init__(all_sprites)
         self.visible = True
         self.frames = []
         self.flipped1 = flipped
-        self.cut_sheet(sheet, columns, rows)
+        self.cut_sheet(sheet, columns, rows, scale=scale)
         self.cur_frame = 0
         self.freq = 0
         self.image = self.frames[self.cur_frame]
@@ -108,7 +108,7 @@ class AnimatedSprite(pygame.sprite.Sprite):
         self.offset = pygame.math.Vector2(offset_x, offset_y)
         self.angle = 0
 
-    def cut_sheet(self, sheet, columns, rows):
+    def cut_sheet(self, sheet, columns, rows, scale=3):
         self.rect = pygame.Rect(0, 0, sheet.get_width() // columns,
                                 sheet.get_height() // rows)
         for j in range(rows):
@@ -117,7 +117,7 @@ class AnimatedSprite(pygame.sprite.Sprite):
                 self.frames.append(
                     pygame.transform.scale(pygame.transform.flip(sheet.subsurface(pygame.Rect(
                         frame_location, self.rect.size)), self.flipped1, False),
-                        (self.rect.width * 3, self.rect.height * 3)))
+                        (self.rect.width * scale, self.rect.height * scale)))
 
     def rotate(self):
         """Rotate the image of the sprite around a pivot point."""
@@ -222,79 +222,32 @@ class Player:
         self.y = pos_y
         self.start_x = pos_x
         self.start_y = pos_y
-        self.sprite_shadow = [
-            AnimatedSprite(load_image("animation/walking_with_weapon/back.png", front=0), 6, 1, self.x,
-                           self.y),
-            AnimatedSprite(load_image("animation/walking_with_weapon/front_45.png", front=0), 6, 1, self.x,
-                           self.y,
-                           True),
-            AnimatedSprite(load_image("animation/walking_with_weapon/front.png", front=0), 6, 1, self.x,
-                           self.y),
-            AnimatedSprite(load_image("animation/walking_with_weapon/front_45.png", front=0), 6, 1, self.x,
-                           self.y),
-            AnimatedSprite(load_image("animation/walking_with_weapon/back_45.png", front=0), 6, 1, self.x,
-                           self.y),
-            AnimatedSprite(load_image("animation/walking_with_weapon/back_45.png", front=0), 6, 1, self.x,
-                           self.y,
-                           True),
+        self.sprite_shadow = []
+        self.sprite = []
+        self.image = [["animation/walking_with_weapon/back.png", 6, 1, False],
+                      ["animation/walking_with_weapon/front_45.png", 6, 1, True],
+                      ["animation/walking_with_weapon/front.png", 6, 1, False],
+                      ["animation/walking_with_weapon/front_45.png", 6, 1, False],
+                      ["animation/walking_with_weapon/back_45.png", 6, 1, False],
+                      ["animation/walking_with_weapon/back_45.png", 6, 1, True],
+                      ["animation/idle_with_weapon/back.png", 6, 1, False],
+                      ["animation/idle_with_weapon/front_45.png", 4, 1, True],
+                      ["animation/idle_with_weapon/front.png", 6, 1, False],
+                      ["animation/idle_with_weapon/front_45.png", 4, 1, False],
+                      ["animation/idle_with_weapon/back_45.png", 4, 1, False],
+                      ["animation/idle_with_weapon/back_45.png", 4, 1, True],
+                      ["animation/roll/back.png", 9, 1, False],
+                      ["animation/roll/front_45.png", 9, 1, True],
+                      ["animation/roll/front.png", 9, 1, False],
+                      ["animation/roll/front_45.png", 9, 1, False],
+                      ["animation/roll/back_45.png", 9, 1, False],
+                      ["animation/roll/back_45.png", 9, 1, True]
+                      ]
+        for i in self.image:
+            print(i)
+            self.sprite_shadow.append(AnimatedSprite(load_image(i[0], front=0), i[1], i[2], self.x, self.y, i[3], scale=3.5))
+            self.sprite.append(AnimatedSprite(load_image(i[0]), i[1], i[2], self.x, self.y, i[3], scale=3))
 
-            AnimatedSprite(load_image("animation/idle_with_weapon/back.png"), 6, 1, self.x, self.y),
-            AnimatedSprite(load_image("animation/idle_with_weapon/front_45.png"), 4, 1, self.x,
-                           self.y,
-                           True),
-            AnimatedSprite(load_image("animation/idle_with_weapon/front.png"), 6, 1, self.x,
-                           self.y),
-            AnimatedSprite(load_image("animation/idle_with_weapon/front_45.png"), 4, 1, self.x,
-                           self.y),
-            AnimatedSprite(load_image("animation/idle_with_weapon/back_45.png"), 4, 1, self.x,
-                           self.y),
-            AnimatedSprite(load_image("animation/idle_with_weapon/back_45.png"), 4, 1, self.x,
-                           self.y,
-                           True),
-
-            AnimatedSprite(load_image("animation/roll/back.png", front=0), 9, 1, self.x, self.y),
-            AnimatedSprite(load_image("animation/roll/front_45.png", front=0), 9, 1, self.x, self.y, True),
-            AnimatedSprite(load_image("animation/roll/front.png", front=0), 9, 1, self.x, self.y),
-            AnimatedSprite(load_image("animation/roll/front_45.png", front=0), 9, 1, self.x, self.y),
-            AnimatedSprite(load_image("animation/roll/back_45.png", front=0), 9, 1, self.x, self.y),
-            AnimatedSprite(load_image("animation/roll/back_45.png", front=0), 9, 1, self.x, self.y, True),
-        ]
-        self.sprite = [
-            AnimatedSprite(load_image("animation/walking_with_weapon/back.png"), 6, 1, self.x,
-                           self.y),
-            AnimatedSprite(load_image("animation/walking_with_weapon/front_45.png"), 6, 1, self.x,
-                           self.y,
-                           True),
-            AnimatedSprite(load_image("animation/walking_with_weapon/front.png"), 6, 1, self.x,
-                           self.y),
-            AnimatedSprite(load_image("animation/walking_with_weapon/front_45.png"), 6, 1, self.x,
-                           self.y),
-            AnimatedSprite(load_image("animation/walking_with_weapon/back_45.png"), 6, 1, self.x,
-                           self.y),
-            AnimatedSprite(load_image("animation/walking_with_weapon/back_45.png"), 6, 1, self.x,
-                           self.y,
-                           True),
-            AnimatedSprite(load_image("animation/idle_with_weapon/back.png"), 6, 1, self.x, self.y),
-            AnimatedSprite(load_image("animation/idle_with_weapon/front_45.png"), 4, 1, self.x,
-                           self.y,
-                           True),
-            AnimatedSprite(load_image("animation/idle_with_weapon/front.png"), 6, 1, self.x,
-                           self.y),
-            AnimatedSprite(load_image("animation/idle_with_weapon/front_45.png"), 4, 1, self.x,
-                           self.y),
-            AnimatedSprite(load_image("animation/idle_with_weapon/back_45.png"), 4, 1, self.x,
-                           self.y),
-            AnimatedSprite(load_image("animation/idle_with_weapon/back_45.png"), 4, 1, self.x,
-                           self.y,
-                           True),
-
-            AnimatedSprite(load_image("animation/roll/back.png"), 9, 1, self.x, self.y),
-            AnimatedSprite(load_image("animation/roll/front_45.png"), 9, 1, self.x, self.y, True),
-            AnimatedSprite(load_image("animation/roll/front.png"), 9, 1, self.x, self.y),
-            AnimatedSprite(load_image("animation/roll/front_45.png"), 9, 1, self.x, self.y),
-            AnimatedSprite(load_image("animation/roll/back_45.png"), 9, 1, self.x, self.y),
-            AnimatedSprite(load_image("animation/roll/back_45.png"), 9, 1, self.x, self.y, True),
-        ]
         self.rect = self.sprite[0].rect.move(pos_x, pos_y)
         self.prev_sprite = 2
         self.set_sprite(2)
@@ -402,7 +355,7 @@ class Player:
             if self.roll == 0:
                 self.direction = None
         for i in self.sprite_shadow:
-            i.pos = (self.x - 10, self.y - 10)
+            i.pos = (self.x - 1, self.y - 1)
         for i in self.sprite:
             i.pos = (self.x, self.y)
         self.rect = pygame.rect.Rect(self.x, self.y, self.rect.w, self.rect.h)
@@ -466,7 +419,6 @@ class Camera:
         screen.fill(pygame.Color('white'))
         obj.rect.x += self.dx
         obj.rect.y += self.dy
-
 
     def update(self, target):
         self.dx = -(target.rect.x + target.rect.w // 2 - width // 2)
