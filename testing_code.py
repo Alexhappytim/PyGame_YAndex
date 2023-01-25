@@ -57,7 +57,6 @@ while running:
         if event.type == pygame.MOUSEBUTTONDOWN:
             # создаём частицы по щелчку мыши
             create_particles(pygame.mouse.get_pos())
-
     all_sprites.update()
     screen.fill((255, 255, 255))
     all_sprites.draw(screen)
