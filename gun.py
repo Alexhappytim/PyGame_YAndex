@@ -1,6 +1,6 @@
 import math
 from sprites import *
-
+from Enemy import size, height, width, start_x, start_y
 
 class Gun:
     def __init__(self, pos_x, pos_y):
@@ -9,7 +9,8 @@ class Gun:
         self.y = pos_y + self.delta[1]
         self.gun_x = pos_x + self.delta[0]
         self.gun_y = pos_y + self.delta[1]
-
+        self.start_x = pos_x
+        self.start_y = pos_y
         self.cur_sprite = 0
         self.frame = 0
         self.gun_sprite = [
@@ -20,6 +21,7 @@ class Gun:
             AnimatedSprite(load_image("animation/guns/uzi/uzi_reload_001.png"), 1, 1, self.gun_x,
                            self.gun_y, offset_x=50)
         ]
+        self.rect = self.gun_sprite[0].rect.move(pos_x, pos_y)
         self.hand_sprite = AnimatedSprite(load_image("animation/guns/hand.png"), 1, 1, self.gun_x,
                                           self.gun_y, offset_x=40)
         self.set_sprite(0)
@@ -51,6 +53,9 @@ class Gun:
             self.hand_sprite.visible = True
             self.set_sprite(self.cur_sprite)
             x1, y1 = pygame.mouse.get_pos()
+            print(x1, y1)
+            x1 += (x - height // 2 + start_x)
+            y1 += (y - width // 2 + start_y)
             dx = x1 + 12 - self.x
             dy = y1 + 12 - self.y
             angle = math.degrees(math.atan2(-dy, dx) % (2 * math.pi))
@@ -66,3 +71,5 @@ class Gun:
             self.hand_sprite.pos = pygame.math.Vector2(self.x, self.y)
             for i in self.gun_sprite:
                 i.pos = pygame.math.Vector2(self.gun_x, self.gun_y)
+        self.rect = pygame.rect.Rect(self.x, self.y, self.rect.w, self.rect.h)
+

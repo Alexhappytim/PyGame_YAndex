@@ -8,6 +8,8 @@ class Player:
     def __init__(self, pos_x, pos_y):
         self.x = pos_x
         self.y = pos_y
+        self.start_x = pos_x
+        self.start_y = pos_y
         self.sprite = [
             AnimatedSprite(load_image("animation/walking_with_weapon/back.png"), 6, 1, self.x,
                            self.y),
@@ -49,6 +51,7 @@ class Player:
         self.set_sprite(2)
         self.speed = 4
         self.roll = 0
+        self.rect = self.sprite[0].rect.move(pos_x, pos_y)
         self.direction = None
         self.gun = Gun(self.x, self.y)
 
@@ -106,6 +109,9 @@ class Player:
                     self.y -= int(self.speed * koef)
 
                 x1, y1 = pygame.mouse.get_pos()
+                x1 += (self.x - 176)
+                y1 += (self.y - 156)
+
                 dx = x1 + 12 - self.x
                 dy = y1 + 12 - self.y
                 angle = math.degrees(math.atan2(-dy, dx) % (2 * math.pi))
@@ -158,4 +164,5 @@ class Player:
             self.roll -= 1
             if self.roll == 0:
                 self.direction = None
+        self.rect = pygame.rect.Rect(self.x, self.y, self.rect.w, self.rect.h)
         self.gun.update(args[0], self.x, self.y, self.roll)
