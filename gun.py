@@ -53,7 +53,7 @@ class Gun:
             self.hand_sprite.visible = True
             self.set_sprite(self.cur_sprite)
             x1, y1 = pygame.mouse.get_pos()
-            print(x1, y1)
+            # print(x1, y1)
             x1 += (x - height // 2 + start_x)
             y1 += (y - width // 2 + start_y)
             dx = x1 + 12 - self.x

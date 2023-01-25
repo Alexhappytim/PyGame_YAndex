@@ -83,7 +83,9 @@ if start:
         camera.update(player)
         for sprite in all_sprites:
             camera.apply(sprite)
-        print(camera.x, camera.y, player.rect)
+
+        print(clock.get_fps())
+        # print(camera.x, camera.y, player.rect)
         """--------------------------------------"""
 
         """Отладочные координаты оси вращения оружия"""
