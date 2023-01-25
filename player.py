@@ -5,7 +5,6 @@ from Enemy import size, height, width, start_x, start_y
 
 
 class Player:
-
     def __init__(self, pos_x, pos_y):
         self.x = pos_x
         self.y = pos_y
@@ -33,7 +32,6 @@ class Player:
                       ["animation/roll/back_45.png", 9, 1, True]
                       ]
         for i in self.image:
-            # print(i)
             self.sprite_shadow.append(
                 AnimatedSprite(load_image(i[0], front=0), i[1], i[2], self.x, self.y, i[3],
                                scale=3.5))
@@ -64,6 +62,8 @@ class Player:
         if 'a' in args[0] and 'd' in args[0]:
             del args[0][args[0].index('a')]
             del args[0][args[0].index('d')]
+        if self.roll and 'LMB' in args[0]:
+            del args[0][args[0].index('LMB')]
 
         # Развилка, в перекате ли мы
         if not self.roll and not self.direction:
@@ -160,3 +160,4 @@ class Player:
             i.pos = (self.x, self.y)
         self.rect = pygame.rect.Rect(self.x, self.y, self.rect.w, self.rect.h)
         self.gun.update(args[0], self.x, self.y, self.roll)
+        return args[0]

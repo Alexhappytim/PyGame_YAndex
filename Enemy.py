@@ -1,8 +1,6 @@
 import random
 from sprites import *
-
-size = height, width = 500, 500
-start_x, start_y = 50, 50
+from constant import *
 
 
 class Enemy:
@@ -21,6 +19,7 @@ class Enemy:
         self.rect = self.sprite[0].rect.move(self.x, self.y)
         self.prev_sprite = 2
         self.speed = 4
+        self.error = 2
         self.go = 50
 
     def update(self, x, y):
@@ -38,13 +37,13 @@ class Enemy:
             koef = 3 / 4
         koef *= 0.75
         if "s" in args[0]:
-            self.y += int(self.speed * koef)
+            self.y += int(random.randrange(self.speed - self.error, self.speed + self.error) * koef)
         if "a" in args[0]:
-            self.x -= int(self.speed * koef)
+            self.x -= int(random.randrange(self.speed - self.error, self.speed + self.error) * koef)
         if "d" in args[0]:
-            self.x += int(self.speed * koef)
+            self.x += int(random.randrange(self.speed - self.error, self.speed + self.error) * koef)
         if "w" in args[0]:
-            self.y -= int(self.speed * koef)
+            self.y -= int(random.randrange(self.speed - self.error, self.speed + self.error) * koef)
         for i in self.sprite:
             i.pos = (self.x, self.y)
 

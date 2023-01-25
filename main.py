@@ -1,13 +1,12 @@
 from player import Player
 from sprites import *
 from Enemy import *
+from constant import *
+from map import *
 import random
 
 pygame.init()
-horizontal_borders = pygame.sprite.Group()
-vertical_borders = pygame.sprite.Group()
-
-
+level_x, level_y, start_x, start_y = generate_level(load_level('level/first.txt'))
 start = True
 clock = pygame.time.Clock()
 FPS = 60
@@ -30,8 +29,21 @@ class Camera:
 
     def apply(self, obj):
         screen.fill(pygame.Color('white'))
-        obj.rect.x += self.dx
-        obj.rect.y += self.dy
+        obj.rect.x = obj.rect.x + self.dx
+        obj.rect.y = obj.rect.y + self.dy
+
+    def apply_tiles(self, obj):
+        screen.fill(pygame.Color('white'))
+        obj.rect.x = width // 2 + (obj.start_x - start_x) - (player.x - start_x)
+        obj.rect.y = height // 2 + (obj.start_y - start_y) - (player.y - start_y)
+        while obj.rect.x + obj.rect.w < 0:
+            obj.rect.x += level_x * tile_width
+        while obj.rect.y + obj.rect.h < 0:
+            obj.rect.y += level_y * tile_height
+        while obj.rect.x > width:
+            obj.rect.x -= level_x * tile_width + tile_width
+        while obj.rect.y > height:
+            obj.rect.y -= level_y * tile_height + tile_height
 
     def update(self, target):
         self.dx = -(target.rect.x + target.rect.w // 2 - width // 2)
@@ -40,28 +52,40 @@ class Camera:
         self.y = -target.start_y + target.y
 
 
+def draw_FPS(screen, fps):
+    font = pygame.font.Font(None, 40)
+    text = font.render(str(fps), True, (100, 255, 100))
+    text_x = width - text.get_width()
+    text_y = 0
+    text_w = text.get_width()
+    text_h = text.get_height()
+    screen.blit(text, (text_x, text_y))
+    pygame.draw.rect(screen, (0, 255, 0), (text_x, text_y,
+                                           text_w, text_h), 1)
+
+
 if start:
     running = True
     enemy = []
+    level_x, level_y, start_x, start_y = generate_level(load_level('level/first.txt'))
     for i in range(10):
         enemy.append(Enemy(start_x, start_y))
     player = Player(start_x, start_y)
-
     screen = pygame.display.set_mode(size)
     screen.fill(pygame.Color('white'))
     all_sprites.update()
     camera = Camera()
     camera.update(player)
     for sprite in all_sprites:
-        camera.apply(sprite)
+        if sprite not in tiles_group.sprites():
+            camera.apply(sprite)
+    for sprite in tiles_group:
+        camera.apply_tiles(sprite)
     while running:
-        screen.fill(pygame.Color('white'))
+        # screen.fill(pygame.Color('white'))
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-
-        all_sprites.draw(screen)
-        all_sprites.update()
 
         """------Список всех нажатых кнопок------"""
         ar = []
@@ -77,21 +101,37 @@ if start:
             ar.append("space")
         if pygame.mouse.get_pressed()[0]:
             ar.append("LMB")
-        player.update(ar)
+        ar = player.update(ar)
         for i in enemy:
             i.update(player.x, player.y)
         camera.update(player)
+        if len(ar) - ar.count('LMB') > 0:
+            for sprite in tiles_group:
+                camera.apply_tiles(sprite)
         for sprite in all_sprites:
-            camera.apply(sprite)
+            if sprite not in tiles_group.sprites():
+                camera.apply(sprite)
 
-        print(clock.get_fps())
+
+
+
+        # print(clock.get_fps())
         # print(camera.x, camera.y, player.rect)
+
+        # print(camera.dx, camera.dy, tiles_group.sprites()[0].rect, tiles_group.sprites()[0].start_x)
+        print(player.rect, tiles_group.sprites()[0].rect)
+        # print(tiles_group.sprites())
+        # for i in all_sprites:
+        #     if i == all_sprites.sprites()
+        #     print(i)
         """--------------------------------------"""
 
         """Отладочные координаты оси вращения оружия"""
         # pygame.draw.circle(screen, (255, 128, 0), [int(i) for i in player.gun.gun_sprite[0].pos], 3)
         # pygame.draw.circle(screen, (255, 0, 0), [int(i) for i in player.gun.hand_sprite.pos], 3)
         all_sprites.draw(screen)
+        all_sprites.update()
+        draw_FPS(screen, round(clock.get_fps()))
         clock.tick(FPS)
         pygame.display.flip()
 else:

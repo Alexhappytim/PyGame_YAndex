@@ -8,10 +8,11 @@ GRAVITY = 1
 screen = pygame.display.set_mode(size)
 screen_rect = (0, 0, width, height)
 
+
 class Particle(pygame.sprite.Sprite):
     # сгенерируем частицы разного размера
     fire = [load_image("animation/death/blood.png")]
-    for scale in (1, 2, 4):
+    for scale in (2, 3, 4):
         fire.append(pygame.transform.scale(fire[0], (scale, scale)))
 
     def __init__(self, pos, dx, dy):

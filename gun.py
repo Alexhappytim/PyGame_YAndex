@@ -2,6 +2,7 @@ import math
 from sprites import *
 from Enemy import size, height, width, start_x, start_y
 
+
 class Gun:
     def __init__(self, pos_x, pos_y):
         self.delta = [0, 15]
