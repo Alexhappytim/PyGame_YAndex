@@ -1,6 +1,7 @@
 from gun import Gun
 from sprites import *
 import math
+from Enemy import size, height, width, start_x, start_y
 
 
 class Player:
@@ -10,43 +11,35 @@ class Player:
         self.y = pos_y
         self.start_x = pos_x
         self.start_y = pos_y
-        self.sprite = [
-            AnimatedSprite(load_image("animation/walking_with_weapon/back.png"), 6, 1, self.x,
-                           self.y),
-            AnimatedSprite(load_image("animation/walking_with_weapon/front_45.png"), 6, 1, self.x,
-                           self.y,
-                           True),
-            AnimatedSprite(load_image("animation/walking_with_weapon/front.png"), 6, 1, self.x,
-                           self.y),
-            AnimatedSprite(load_image("animation/walking_with_weapon/front_45.png"), 6, 1, self.x,
-                           self.y),
-            AnimatedSprite(load_image("animation/walking_with_weapon/back_45.png"), 6, 1, self.x,
-                           self.y),
-            AnimatedSprite(load_image("animation/walking_with_weapon/back_45.png"), 6, 1, self.x,
-                           self.y,
-                           True),
+        self.sprite_shadow = []
+        self.sprite = []
+        self.image = [["animation/walking_with_weapon/back.png", 6, 1, False],
+                      ["animation/walking_with_weapon/front_45.png", 6, 1, True],
+                      ["animation/walking_with_weapon/front.png", 6, 1, False],
+                      ["animation/walking_with_weapon/front_45.png", 6, 1, False],
+                      ["animation/walking_with_weapon/back_45.png", 6, 1, False],
+                      ["animation/walking_with_weapon/back_45.png", 6, 1, True],
+                      ["animation/idle_with_weapon/back.png", 6, 1, False],
+                      ["animation/idle_with_weapon/front_45.png", 4, 1, True],
+                      ["animation/idle_with_weapon/front.png", 6, 1, False],
+                      ["animation/idle_with_weapon/front_45.png", 4, 1, False],
+                      ["animation/idle_with_weapon/back_45.png", 4, 1, False],
+                      ["animation/idle_with_weapon/back_45.png", 4, 1, True],
+                      ["animation/roll/back.png", 9, 1, False],
+                      ["animation/roll/front_45.png", 9, 1, True],
+                      ["animation/roll/front.png", 9, 1, False],
+                      ["animation/roll/front_45.png", 9, 1, False],
+                      ["animation/roll/back_45.png", 9, 1, False],
+                      ["animation/roll/back_45.png", 9, 1, True]
+                      ]
+        for i in self.image:
+            print(i)
+            self.sprite_shadow.append(
+                AnimatedSprite(load_image(i[0], front=0), i[1], i[2], self.x, self.y, i[3],
+                               scale=3.5))
+            self.sprite.append(
+                AnimatedSprite(load_image(i[0]), i[1], i[2], self.x, self.y, i[3], scale=3))
 
-            AnimatedSprite(load_image("animation/idle_with_weapon/back.png"), 6, 1, self.x, self.y),
-            AnimatedSprite(load_image("animation/idle_with_weapon/front_45.png"), 4, 1, self.x,
-                           self.y,
-                           True),
-            AnimatedSprite(load_image("animation/idle_with_weapon/front.png"), 6, 1, self.x,
-                           self.y),
-            AnimatedSprite(load_image("animation/idle_with_weapon/front_45.png"), 4, 1, self.x,
-                           self.y),
-            AnimatedSprite(load_image("animation/idle_with_weapon/back_45.png"), 4, 1, self.x,
-                           self.y),
-            AnimatedSprite(load_image("animation/idle_with_weapon/back_45.png"), 4, 1, self.x,
-                           self.y,
-                           True),
-
-            AnimatedSprite(load_image("animation/roll/back.png"), 9, 1, self.x, self.y),
-            AnimatedSprite(load_image("animation/roll/front_45.png"), 9, 1, self.x, self.y, True),
-            AnimatedSprite(load_image("animation/roll/front.png"), 9, 1, self.x, self.y),
-            AnimatedSprite(load_image("animation/roll/front_45.png"), 9, 1, self.x, self.y),
-            AnimatedSprite(load_image("animation/roll/back_45.png"), 9, 1, self.x, self.y),
-            AnimatedSprite(load_image("animation/roll/back_45.png"), 9, 1, self.x, self.y, True),
-        ]
         self.cur_sprite = 2
         self.set_sprite(2)
         self.speed = 4
@@ -56,9 +49,11 @@ class Player:
         self.gun = Gun(self.x, self.y)
 
     def set_sprite(self, n):
-        for i in self.sprite:
-            i.visible = False
+        for _ in [self.sprite, self.sprite_shadow]:
+            for i in _:
+                i.visible = False
         self.sprite[n].visible = True
+        self.sprite_shadow[n].visible = True
         self.cur_sprite = n
 
     def update(self, *args):
@@ -109,8 +104,8 @@ class Player:
                     self.y -= int(self.speed * koef)
 
                 x1, y1 = pygame.mouse.get_pos()
-                x1 += (self.x - 176)
-                y1 += (self.y - 156)
+                x1 += (self.x - height // 2 + start_x)
+                y1 += (self.y - width // 2 + start_y)
 
                 dx = x1 + 12 - self.x
                 dy = y1 + 12 - self.y
@@ -142,13 +137,8 @@ class Player:
                         self.set_sprite(10)
                     if self.cur_sprite == 5 or self.cur_sprite == 17:
                         self.set_sprite(11)
-
-                for i in self.sprite:
-                    i.pos = (self.x, self.y)
         else:
-
             koef = 1
-
             if len(self.direction) > 2:
                 koef = koef * 3 / 4
             if "s" in self.direction:
@@ -164,5 +154,9 @@ class Player:
             self.roll -= 1
             if self.roll == 0:
                 self.direction = None
+        for i in self.sprite_shadow:
+            i.pos = (self.x - 1, self.y - 1)
+        for i in self.sprite:
+            i.pos = (self.x, self.y)
         self.rect = pygame.rect.Rect(self.x, self.y, self.rect.w, self.rect.h)
         self.gun.update(args[0], self.x, self.y, self.roll)

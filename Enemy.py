@@ -1,7 +1,7 @@
 import random
 from sprites import *
 
-size = height, width = 500, 500
+size = height, width = 1000, 1000
 start_x, start_y = 50, 50
 
 
