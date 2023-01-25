@@ -424,16 +424,8 @@ class Enemy:
         ]
         self.rect = self.sprite[0].rect.move(self.x, self.y)
         self.prev_sprite = 2
-        self.set_sprite(0)
         self.speed = 4
         self.go = 50
-
-    def set_sprite(self, n):
-        for i in self.sprite:
-            i.visible = False
-        self.sprite[n].visible = True
-        if n < 12:
-            self.prev_sprite = n
 
     def update(self, x, y):
         args = [[]]
