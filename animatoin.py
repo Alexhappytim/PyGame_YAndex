@@ -243,7 +243,6 @@ class Player:
                       ["animation/roll/back_45.png", 9, 1, False],
                       ["animation/roll/back_45.png", 9, 1, True]
                       ]
-
         for i in self.image:
             print(i)
             self.sprite_shadow.append(AnimatedSprite(load_image(i[0], front=0), i[1], i[2], self.x, self.y, i[3], scale=3.5))
