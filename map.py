@@ -1,6 +1,5 @@
-from constant import *
 from sprites import *
-from player import Player
+from constant import *
 
 
 def load_level(filename):
@@ -24,10 +23,7 @@ class Tile(pygame.sprite.Sprite):
             tile_width * pos_x, tile_height * pos_y)
         self.start_x = self.rect.x
         self.start_y = self.rect.y
-        print(self.rect, self.start_x, self.start_y)
-
-    def update(self):
-        pass
+        # print(self.rect, self.start_x, self.start_y)
 
 
 def generate_level(level):
@@ -40,7 +36,7 @@ def generate_level(level):
                 Tile('wall', x, y)
             elif level[y][x] == '@':
                 Tile('empty', x, y)
-                x_player, y_player = x, y
-    return x, y, x_player * tile_width, y_player * tile_height
+                x_player, y_player = x * tile_width, y * tile_height
+    return x, y, x_player, y_player
 
 

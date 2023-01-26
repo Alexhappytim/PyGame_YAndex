@@ -1,6 +1,8 @@
 import math
 from sprites import *
-from Enemy import size, height, width, start_x, start_y
+from constant import *
+
+start_x, start_y = None, None
 
 
 class Gun:
@@ -55,8 +57,8 @@ class Gun:
             self.set_sprite(self.cur_sprite)
             x1, y1 = pygame.mouse.get_pos()
             # print(x1, y1)
-            x1 += (x - height // 2 + start_x)
-            y1 += (y - width // 2 + start_y)
+            x1 += (x - width // 2 + 50)
+            y1 += (y - height // 2 + 50)
             dx = x1 + 12 - self.x
             dy = y1 + 12 - self.y
             angle = math.degrees(math.atan2(-dy, dx) % (2 * math.pi))

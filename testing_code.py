@@ -4,7 +4,7 @@ from sprites import *
 
 size = height, width = 500, 500
 pygame.init()
-GRAVITY = 1
+GRAVITY = 0.5
 screen = pygame.display.set_mode(size)
 screen_rect = (0, 0, width, height)
 
@@ -12,8 +12,10 @@ screen_rect = (0, 0, width, height)
 class Particle(pygame.sprite.Sprite):
     # сгенерируем частицы разного размера
     fire = [load_image("animation/death/blood.png")]
-    for scale in (2, 3, 4):
-        fire.append(pygame.transform.scale(fire[0], (scale, scale)))
+    fire = [load_image("decoration/bullet.png")]
+
+    for scale in (4, 5, 10):
+        fire.append(pygame.transform.scale(fire[0], (scale * 2, scale)))
 
     def __init__(self, pos, dx, dy):
         super().__init__(all_sprites)
@@ -39,9 +41,10 @@ class Particle(pygame.sprite.Sprite):
         if not self.rect.colliderect(screen_rect):
             self.kill()
 
+
 def create_particles(position):
     # количество создаваемых частиц
-    particle_count = 5
+    particle_count = 20
     # возможные скорости
     numbers = range(-5, 6)
     for _ in range(particle_count):

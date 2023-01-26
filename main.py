@@ -1,15 +1,15 @@
 from player import Player
 from sprites import *
 from Enemy import *
-from constant import *
 from map import *
 import random
+from constant import *
+from strart_screen import *
+
 
 pygame.init()
 level_x, level_y, start_x, start_y = generate_level(load_level('level/first.txt'))
 start = True
-clock = pygame.time.Clock()
-FPS = 60
 player = None
 
 """---------Сетап измененного курсора----------"""
@@ -54,24 +54,23 @@ class Camera:
 
 def draw_FPS(screen, fps):
     font = pygame.font.Font(None, 40)
-    text = font.render(str(fps), True, (100, 255, 100))
+    text = font.render(str(fps), True, (0, 0, 0))
     text_x = width - text.get_width()
     text_y = 0
     text_w = text.get_width()
     text_h = text.get_height()
     screen.blit(text, (text_x, text_y))
-    pygame.draw.rect(screen, (0, 255, 0), (text_x, text_y,
+    pygame.draw.rect(screen, (0, 0, 0), (text_x, text_y,
                                            text_w, text_h), 1)
 
 
 if start:
+    start_screen()
     running = True
     enemy = []
-    level_x, level_y, start_x, start_y = generate_level(load_level('level/first.txt'))
-    for i in range(10):
+    for i in range(1):
         enemy.append(Enemy(start_x, start_y))
     player = Player(start_x, start_y)
-    screen = pygame.display.set_mode(size)
     screen.fill(pygame.Color('white'))
     all_sprites.update()
     camera = Camera()
@@ -112,14 +111,11 @@ if start:
             if sprite not in tiles_group.sprites():
                 camera.apply(sprite)
 
-
-
-
         # print(clock.get_fps())
-        # print(camera.x, camera.y, player.rect)
+        # print(camera.x, camera.y, player.rect, player.start_x, player.start_y, player.x, player.y)
 
         # print(camera.dx, camera.dy, tiles_group.sprites()[0].rect, tiles_group.sprites()[0].start_x)
-        print(player.rect, tiles_group.sprites()[0].rect)
+        # print(player.rect, tiles_group.sprites()[0].rect)
         # print(tiles_group.sprites())
         # for i in all_sprites:
         #     if i == all_sprites.sprites()
@@ -132,6 +128,7 @@ if start:
         all_sprites.draw(screen)
         all_sprites.update()
         draw_FPS(screen, round(clock.get_fps()))
+        player.draw_health(screen)
         clock.tick(FPS)
         pygame.display.flip()
 else:

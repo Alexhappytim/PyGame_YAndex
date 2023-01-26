@@ -6,6 +6,7 @@ from constant import *
 class Enemy:
     def __init__(self, pos_x, pos_y):
         self.x, self.y = pos_x, pos_y
+        print(pos_x, pos_y)
         while pos_x - width // 2 < self.x < pos_x + width // 2 and pos_y - height // 2 < self.y < pos_y + height // 2:
             self.x = random.randrange(pos_x - width, pos_x + width)
             self.y = random.randrange(pos_x - height, pos_x + height)

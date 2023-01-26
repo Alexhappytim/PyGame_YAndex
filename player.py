@@ -1,7 +1,9 @@
+import pygame
+
 from gun import Gun
 from sprites import *
 import math
-from Enemy import size, height, width, start_x, start_y
+from constant import *
 
 
 class Player:
@@ -45,6 +47,7 @@ class Player:
         self.rect = self.sprite[0].rect.move(pos_x, pos_y)
         self.direction = None
         self.gun = Gun(self.x, self.y)
+        self.health = 100
 
     def set_sprite(self, n):
         for _ in [self.sprite, self.sprite_shadow]:
@@ -104,8 +107,8 @@ class Player:
                     self.y -= int(self.speed * koef)
 
                 x1, y1 = pygame.mouse.get_pos()
-                x1 += (self.x - height // 2 + start_x)
-                y1 += (self.y - width // 2 + start_y)
+                x1 += (self.x - height // 2 + 50)
+                y1 += (self.y - width // 2 + 50)
 
                 dx = x1 + 12 - self.x
                 dy = y1 + 12 - self.y
@@ -161,3 +164,8 @@ class Player:
         self.rect = pygame.rect.Rect(self.x, self.y, self.rect.w, self.rect.h)
         self.gun.update(args[0], self.x, self.y, self.roll)
         return args[0]
+
+    def draw_health(self, screen):
+        pygame.draw.rect(screen, (pygame.Color('red')), (0, 0, width // 5 * self.health / 100, height // 20))
+        pygame.draw.rect(screen, (0, 0, 0), (0, 0, width // 5, height // 20), 1)
+
