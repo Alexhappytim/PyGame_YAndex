@@ -8,7 +8,7 @@ from strart_screen import *
 
 
 pygame.init()
-level_x, level_y, start_x, start_y = generate_level(load_level('level/first.txt'))
+level_x, level_y, start_x, start_y = generate_level(load_level('level/test.txt'))
 start = True
 player = None
 
@@ -28,22 +28,23 @@ class Camera:
         self.y = 0
 
     def apply(self, obj):
-        screen.fill(pygame.Color('white'))
+        screen.fill(pygame.Color('black'))
         obj.rect.x = obj.rect.x + self.dx
         obj.rect.y = obj.rect.y + self.dy
 
     def apply_tiles(self, obj):
-        screen.fill(pygame.Color('white'))
+        screen.fill(pygame.Color('black'))
         obj.rect.x = width // 2 + (obj.start_x - start_x) - (player.x - start_x)
         obj.rect.y = height // 2 + (obj.start_y - start_y) - (player.y - start_y)
-        while obj.rect.x + obj.rect.w < 0:
-            obj.rect.x += level_x * tile_width
-        while obj.rect.y + obj.rect.h < 0:
-            obj.rect.y += level_y * tile_height
-        while obj.rect.x > width:
-            obj.rect.x -= level_x * tile_width + tile_width
-        while obj.rect.y > height:
-            obj.rect.y -= level_y * tile_height + tile_height
+
+        # while obj.rect.x + obj.rect.w < 0:
+        #     obj.rect.x += level_x * tile_width
+        # while obj.rect.y + obj.rect.h < 0:
+        #     obj.rect.y += level_y * tile_height
+        # while obj.rect.x > width:
+        #     obj.rect.x -= level_x * tile_width + tile_width
+        # while obj.rect.y > height:
+        #     obj.rect.y -= level_y * tile_height + tile_height
 
     def update(self, target):
         self.dx = -(target.rect.x + target.rect.w // 2 - width // 2)
@@ -71,7 +72,7 @@ if start:
     for i in range(1):
         enemy.append(Enemy(start_x, start_y))
     player = Player(start_x, start_y)
-    screen.fill(pygame.Color('white'))
+    screen.fill(pygame.Color('black'))
     all_sprites.update()
     camera = Camera()
     camera.update(player)
@@ -81,7 +82,7 @@ if start:
     for sprite in tiles_group:
         camera.apply_tiles(sprite)
     while running:
-        # screen.fill(pygame.Color('white'))
+        # screen.fill(pygame.Color('black'))
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -100,6 +101,7 @@ if start:
             ar.append("space")
         if pygame.mouse.get_pressed()[0]:
             ar.append("LMB")
+        """--------------------------------------"""
         ar = player.update(ar)
         for i in enemy:
             i.update(player.x, player.y)
@@ -120,7 +122,7 @@ if start:
         # for i in all_sprites:
         #     if i == all_sprites.sprites()
         #     print(i)
-        """--------------------------------------"""
+
 
         """Отладочные координаты оси вращения оружия"""
         # pygame.draw.circle(screen, (255, 128, 0), [int(i) for i in player.gun.gun_sprite[0].pos], 3)

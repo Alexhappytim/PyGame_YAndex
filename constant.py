@@ -7,9 +7,9 @@ vertical_borders = pygame.sprite.Group()
 FPS = 60
 
 size = height, width = 500, 500
-tile_width = tile_height = 70
+tile_width = tile_height = 64
 screen = pygame.display.set_mode(size)
 tile_images = {
-    'wall': load_image('decoration/pt.png'),
-    'empty': load_image('decoration/grass.png')
+    'wall': load_image('decoration/wall.png'),
+    'empty': load_image('decoration/floor.png')
 }
