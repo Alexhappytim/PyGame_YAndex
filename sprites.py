@@ -9,6 +9,7 @@ player_group = pygame.sprite.Group()
 bullet_sprites = pygame.sprite.Group()
 enemy_sprites = pygame.sprite.Group()
 gun_sprites = pygame.sprite.Group()
+xp_sprites = pygame.sprite.Group()
 
 
 def rot_center(image, rect, angle):
@@ -24,7 +25,8 @@ def load_image(name, front=1, colorkey=None):
         print(f"Файл с изображением '{fullname}' не найден")
         sys.exit()
     if front == 0:
-        fullname_new = '.'.join(i for i in fullname.split('.')[:-1]) + '#.' + fullname.split('.')[-1]
+        fullname_new = '.'.join(i for i in fullname.split('.')[:-1]) + '#.' + fullname.split('.')[
+            -1]
         if not os.path.isfile(fullname_new):
             img = Image.open(fullname).convert('RGBA')
             pixdata = img.load()
@@ -80,15 +82,16 @@ class AnimatedSprite(pygame.sprite.Sprite):
 
     def rotate(self):
         """Вращение спрайта вокруг определенной точки"""
-        self.image = pygame.transform.rotozoom(pygame.transform.flip(self.frames[self.cur_frame], False, self.rot_flip),
-                                               -self.angle, 1)
+        self.image = pygame.transform.rotozoom(
+            pygame.transform.flip(self.frames[self.cur_frame], False, self.rot_flip),
+            -self.angle, 1)
         offset_rotated = self.offset.rotate(self.angle)
         self.rect = self.image.get_rect(center=self.pos + offset_rotated)
 
     def update(self):
         if self.visible:
             # TODO Менять фреймрейт анимации в зависимости от колва кадров
-            if self.freq == len(self.frames):
+            if self.freq == 6:
                 self.cur_frame = (self.cur_frame + 1) % len(self.frames)
                 self.freq = 0
             else:

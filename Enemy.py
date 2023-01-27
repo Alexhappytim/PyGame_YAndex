@@ -2,6 +2,7 @@ import random
 
 from sprites import *
 from constant import *
+from levels import *
 
 
 class Enemy(pygame.sprite.Sprite):
@@ -19,12 +20,13 @@ class Enemy(pygame.sprite.Sprite):
         self.rect = self.sprite.rect.move(self.x, self.y)
         self.mask = pygame.mask.from_surface(self.sprite.image)
 
-        self.speed = 4
+        self.speed = 2
         self.error = 2
         self.go = 50
         self.health = 10
 
-    def update(self, x, y):
+    def update(self, rect):
+        x, y = rect.x, rect.y
         args = [[]]
         if self.x + self.go < x:
             args[0].append('d')
@@ -48,11 +50,19 @@ class Enemy(pygame.sprite.Sprite):
             self.y -= int(random.randrange(self.speed - self.error, self.speed + self.error) * koef)
         self.sprite.pos = (self.x, self.y)
         self.rect = self.sprite.rect
+        # print(self.rect)
         # self.rect = pygame.rect.Rect(self.x, self.y, self.rect.w, self.rect.h)
         if self.health < 1:
+            dx = -(rect.x + rect.w // 2 - width // 2)
+            dy = -(rect.y + rect.h // 2 - height // 2)
+            self.rect.x = self.rect.x + dx
+            self.rect.y = self.rect.y + dy
+            print(123, self.rect)
+            Xp(self.x, self.y, self.rect, x, y)
             self.sprite.kill()
             self.kill()
 
         for player in player_group:
             if pygame.sprite.collide_mask(self, player):
-                player.health -= 0.5
+                # player.health -= 0.5
+                pass

@@ -50,6 +50,8 @@ class Player(pygame.sprite.Sprite):
         self.direction = None
         self.gun = Gun(self.x, self.y)
         self.health = 100
+        self.arg = []
+        self.xp = 0
 
     def set_sprite(self, n):
         for _ in [self.sprite, self.sprite_shadow]:
@@ -75,6 +77,8 @@ class Player(pygame.sprite.Sprite):
             # Проверка, войти ли в перекат
             if "space" in args[0] and (
                     "w" in args[0] or "a" in args[0] or "s" in args[0] or "d" in args[0]):
+                del args[0][args[0].index('space')]
+                self.arg += args[0]
                 self.roll = 56
                 self.direction = args[0]
                 if self.direction:
@@ -158,6 +162,7 @@ class Player(pygame.sprite.Sprite):
                 i.pos = (self.x, self.y)
             self.roll -= 1
             if self.roll == 0:
+                self.arg = []
                 self.direction = None
         for i in self.sprite_shadow:
             i.pos = (self.x - 1, self.y - 1)
@@ -176,8 +181,15 @@ class Player(pygame.sprite.Sprite):
 
             for i in player_group:
                 i.kill()
-        return args[0], self.health
+        return args[0] + self.arg, self.health
 
     def draw_health(self, screen):
-        pygame.draw.rect(screen, (pygame.Color('red')), (0, 0, width // 5 * self.health / 100, height // 20))
+        pygame.draw.rect(screen, (pygame.Color('red')),
+                         (0, 0, width // 5 * self.health / 100, height // 20))
         pygame.draw.rect(screen, (0, 0, 0), (0, 0, width // 5, height // 20), 1)
+
+    def draw_xp(self, screen):
+        pygame.draw.rect(screen, (pygame.Color('green')),
+                         (0, height // 20, width // 5 * self.xp / 10, height // 20))
+        pygame.draw.rect(screen, (0, 0, 0), (0, height // 20, width // 5, height // 20), 1)
+

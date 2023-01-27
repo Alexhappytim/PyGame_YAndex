@@ -4,7 +4,7 @@ from player import Player
 from sprites import *
 from Enemy import *
 from map import *
-from kill import *
+
 import random
 from constant import *
 from strart_screen import *
@@ -48,6 +48,13 @@ class Camera:
         while obj.rect.y > height:
             obj.rect.y -= level_y * tile_height + tile_height
 
+    def apply_xp(self, obj):
+        screen.fill(pygame.Color('white'))
+        obj.rect.x = -(player_group.sprites()[0].x - obj.start_p_x) + obj.start_x
+        obj.rect.y = -(player_group.sprites()[0].y - obj.start_p_y) + obj.start_y
+        # obj.rect.x = width // 2 + (obj.start_x - obj.start_p_x) - (player_group.sprites()[0].x - obj.start_p_x)
+        # obj.rect.y
+    #
     def update(self, target):
         self.dx = -(target.rect.x + target.rect.w // 2 - width // 2)
         self.dy = -(target.rect.y + target.rect.h // 2 - height // 2)
@@ -71,8 +78,8 @@ if start:
     start_screen()
     running = True
     try:
-        for i in range(10):
-            Enemy(start_x, start_y)
+        # for i in range(10):
+        #     Enemy(start_x, start_y)
         for i in range(1):
             Player(start_x, start_y)
         screen.fill(pygame.Color('white'))
@@ -81,7 +88,7 @@ if start:
         print(player_group.sprites()[0])
         camera.update(player_group.sprites()[0])
         for sprite in all_sprites:
-            if sprite not in tiles_group.sprites():
+            if sprite not in tiles_group.sprites() and sprite not in xp_sprites:
                 camera.apply(sprite)
             else:
                 camera.apply_tiles(sprite)
@@ -105,24 +112,29 @@ if start:
                 ar.append("space")
             if pygame.mouse.get_pressed()[0]:
                 ar.append("LMB")
+            if len(enemy_sprites) < count_enemy:
+                Enemy(player_group.sprites()[0].rect.x, player_group.sprites()[0].rect.y)
             ar, health = player_group.sprites()[0].update(ar)
             if health <= 0:
                 raise Exception('123')
             for enemy in enemy_sprites:
-                enemy.update(player_group.sprites()[0].x, player_group.sprites()[0].y)
+                enemy.update(player_group.sprites()[0].rect)
             camera.update(player_group.sprites()[0])
             if len(ar) - ar.count('LMB') > 0:
                 for sprite in tiles_group:
                     camera.apply_tiles(sprite)
             for sprite in all_sprites:
-                if sprite not in tiles_group.sprites():
+                if sprite not in tiles_group.sprites() and sprite not in xp_sprites.sprites():
                     camera.apply(sprite)
+            for sprite in xp_sprites:
+                camera.apply_xp(sprite)
 
             # print(clock.get_fps())
             # print(camera.x, camera.y, player.rect, player.start_x, player.start_y, player.x, player.y)
 
             # print(camera.dx, camera.dy, tiles_group.sprites()[0].rect, tiles_group.sprites()[0].start_x)
-            # print(player.rect, tiles_group.sprites()[0].rect)
+            if len(xp_sprites.sprites()) > 0:
+                print(player_group.sprites()[0].rect, xp_sprites.sprites()[0].rect)
             # print(tiles_group.sprites())
             # for i in all_sprites:
             #     if i == all_sprites.sprites()
@@ -138,6 +150,7 @@ if start:
             bullet_sprites.draw(screen)
             draw_FPS(screen, round(clock.get_fps()))
             player_group.sprites()[0].draw_health(screen)
+            player_group.sprites()[0].draw_xp(screen)
             clock.tick(FPS)
             pygame.display.flip()
     except Exception as ex:

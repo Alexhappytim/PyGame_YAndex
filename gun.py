@@ -30,6 +30,7 @@ class Gun(pygame.sprite.Sprite):
         self.hand_sprite = AnimatedSprite(load_image("animation/guns/hand.png"), 1, 1, self.gun_x,
                                           self.gun_y, offset_x=40)
         self.set_sprite(0)
+        self.delay = 0
 
     def set_sprite(self, n):
         """Смена спрайта на n-ый по счету в своем списке"""
@@ -50,14 +51,16 @@ class Gun(pygame.sprite.Sprite):
                 self.set_sprite(1)
 
             x1, y1 = pygame.mouse.get_pos()
-            # print(x1, y1)
             x1 += (rect.x - width // 2 + 50)
             y1 += (rect.y - height // 2 + 50)
             dx = x1 + 12 - self.x
             dy = y1 + 12 - self.y
             angle = math.degrees(math.atan2(-dy, dx) % (2 * math.pi))
-            # print(angle, math.cos(angle * math.pi / 180), math.sin(angle * math.pi / 180))
-            Bullet(math.cos(angle * math.pi / 180), math.sin(angle * math.pi / 180), rect)
+            if self.delay == 5:
+                Bullet(math.cos(angle * math.pi / 180), math.sin(angle * math.pi / 180), rect)
+                self.delay = 0
+            else:
+                self.delay += 1
         else:
             self.set_sprite(0)
         if is_rolling:
@@ -92,4 +95,3 @@ class Gun(pygame.sprite.Sprite):
         for i in self.gun_sprite + [self.hand_sprite]:
             i.kill()
         self.kill()
-
