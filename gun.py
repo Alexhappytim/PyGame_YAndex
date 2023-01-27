@@ -1,4 +1,5 @@
 import math
+import random
 from sprites import *
 from constant import *
 from bullet import *
@@ -55,7 +56,7 @@ class Gun(pygame.sprite.Sprite):
             y1 += (rect.y - height // 2 + 50)
             dx = x1 + 12 - self.x
             dy = y1 + 12 - self.y
-            angle = math.degrees(math.atan2(-dy, dx) % (2 * math.pi))
+            angle = math.degrees(math.atan2(-dy, dx) % (2 * math.pi)) + random.randint(-10,10)
             if self.delay == 5:
                 Bullet(math.cos(angle * math.pi / 180), math.sin(angle * math.pi / 180), rect)
                 self.delay = 0

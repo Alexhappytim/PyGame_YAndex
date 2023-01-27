@@ -38,9 +38,9 @@ def load_image(name, front=1, colorkey=None):
             img.save(fullname_new)
             img.close()
         fullname = fullname_new
-    image = pygame.image.load(fullname)
+    image = pygame.image.load(fullname).convert_alpha()
     if colorkey is not None:
-        image = image.convert()
+        image = image.convert_alpha()
         if colorkey == -1:
             colorkey = image.get_at((0, 0))
         image.set_colorkey(colorkey)

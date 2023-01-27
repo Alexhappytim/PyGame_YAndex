@@ -2,14 +2,14 @@ import random
 
 from sprites import *
 from constant import *
-from levels import *
+# from levels import *
 
 
 class Enemy(pygame.sprite.Sprite):
     def __init__(self, pos_x, pos_y):
         super().__init__(enemy_sprites)
         self.x, self.y = pos_x, pos_y
-        print(pos_x, pos_y)
+        # print(pos_x, pos_y)
         while pos_x - width // 2 < self.x < pos_x + width // 2 and pos_y - height // 2 < self.y < pos_y + height // 2:
             self.x = random.randrange(pos_x - width, pos_x + width)
             self.y = random.randrange(pos_x - height, pos_x + height)
@@ -28,6 +28,14 @@ class Enemy(pygame.sprite.Sprite):
     def update(self, rect):
         x, y = rect.x, rect.y
         args = [[]]
+        if self.x < 308:
+            self.x = 308
+        if self.x > 1284:
+            self.x = 1284
+        if self.y < 320:
+            self.y = 320
+        if self.y > 1279:
+            self.y = 1270
         if self.x + self.go < x:
             args[0].append('d')
         elif self.x - self.go > x:
@@ -57,8 +65,9 @@ class Enemy(pygame.sprite.Sprite):
             dy = -(rect.y + rect.h // 2 - height // 2)
             self.rect.x = self.rect.x + dx
             self.rect.y = self.rect.y + dy
-            print(123, self.rect)
-            Xp(self.x, self.y, self.rect, x, y)
+            # print(123, self.rect)
+            for player in player_group:
+                player.xp += 1
             self.sprite.kill()
             self.kill()
 

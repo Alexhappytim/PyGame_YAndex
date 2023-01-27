@@ -14,6 +14,7 @@ pygame.init()
 level_x, level_y, start_x, start_y = generate_level(load_level('level/first.txt'))
 start = True
 player = None
+pygame.event.set_allowed([pygame.QUIT, pygame.KEYDOWN, pygame.KEYUP])
 
 """---------Сетап измененного курсора----------"""
 f = open("data/cursor.txt")
@@ -64,13 +65,13 @@ class Camera:
 
 def draw_FPS(screen, fps):
     font = pygame.font.Font(None, 40)
-    text = font.render(str(fps), True, (0, 0, 0))
+    text = font.render(str(fps), True, pygame.Color('green'))
     text_x = width - text.get_width()
     text_y = 0
     text_w = text.get_width()
     text_h = text.get_height()
     screen.blit(text, (text_x, text_y))
-    pygame.draw.rect(screen, (0, 0, 0), (text_x, text_y, text_w, text_h), 1)
+    pygame.draw.rect(screen, pygame.Color('green'), (text_x, text_y, text_w, text_h), 1)
 
 
 if start:
@@ -78,14 +79,13 @@ if start:
     start_screen()
     running = True
     try:
-        # for i in range(10):
-        #     Enemy(start_x, start_y)
-        for i in range(1):
-            Player(start_x, start_y)
+        for i in range(10):
+            Enemy(start_x, start_y)
+        Player(start_x, start_y)
         screen.fill(pygame.Color('white'))
         all_sprites.update()
         camera = Camera()
-        print(player_group.sprites()[0])
+        # print(player_group.sprites()[0])
         camera.update(player_group.sprites()[0])
         for sprite in all_sprites:
             if sprite not in tiles_group.sprites() and sprite not in xp_sprites:

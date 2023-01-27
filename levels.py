@@ -15,7 +15,7 @@ class Xp(pygame.sprite.Sprite):
         self.start_x, self.start_y = rect.x, rect.y
         self.start_p_x, self.start_p_y = x1, y1
         self.mask = pygame.mask.from_surface(self.image)
-        print(x1, y1, player_group.sprites()[0].rect)
+        # print(x1, y1, player_group.sprites()[0].rect)
 
         # print('**************************', self.rect, self.start_x, self.start_y, player_group.sprites()[0].rect,  player_group.sprites()[0].xp)
 
@@ -23,7 +23,7 @@ class Xp(pygame.sprite.Sprite):
     def update(self):
         # print(self.rect, self.start_x, self.start_y, player_group.sprites()[0].rect,  player_group.sprites()[0].xp)
 
-        for player in player_group:
+
             if pygame.sprite.collide_mask(self, player):
                 player.xp += 1
                 self.kill()

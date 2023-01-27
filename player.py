@@ -35,9 +35,9 @@ class Player(pygame.sprite.Sprite):
                        ["animation/roll/back_45.png", 9, 1, True]
                        ]
         for i in self.images:
-            self.sprite_shadow.append(
-                AnimatedSprite(load_image(i[0], front=0), i[1], i[2], self.x, self.y, i[3],
-                               scale=3.5))
+            # self.sprite_shadow.append(
+            #     AnimatedSprite(load_image(i[0], front=0), i[1], i[2], self.x, self.y, i[3],
+            #                    scale=3.5))
             self.sprite.append(
                 AnimatedSprite(load_image(i[0]), i[1], i[2], self.x, self.y, i[3], scale=3))
 
@@ -58,10 +58,11 @@ class Player(pygame.sprite.Sprite):
             for i in _:
                 i.visible = False
         self.sprite[n].visible = True
-        self.sprite_shadow[n].visible = True
+        # self.sprite_shadow[n].visible = True
         self.cur_sprite = n
 
     def update(self, *args):
+        print(self.x,self.y)
         # Почистим массив кнопок от противоположных
         if 's' in args[0] and 'w' in args[0]:
             del args[0][args[0].index('w')]
@@ -71,6 +72,35 @@ class Player(pygame.sprite.Sprite):
             del args[0][args[0].index('d')]
         if self.roll and 'LMB' in args[0]:
             del args[0][args[0].index('LMB')]
+
+        if self.x < 308:
+            if 'a' in args[0]:
+                del args[0][args[0].index('a')]
+            self.roll = 0
+            self.direction = []
+            for i in self.sprite[11:]:
+                i.cur_frame = 0
+        if self.y < 320:
+            if 'w' in args[0]:
+                del args[0][args[0].index('w')]
+            self.roll = 0
+            self.direction = []
+            for i in self.sprite[11:]:
+                i.cur_frame = 0
+        if self.x > 1284:
+            if 'd' in args[0]:
+                del args[0][args[0].index('d')]
+            self.roll = 0
+            self.direction = []
+            for i in self.sprite[11:]:
+                i.cur_frame = 0
+        if self.y > 1279:
+            if 's' in args[0]:
+                del args[0][args[0].index('s')]
+            self.roll = 0
+            self.direction = []
+            for i in self.sprite[11:]:
+                i.cur_frame = 0
 
         # Развилка, в перекате ли мы
         if not self.roll and not self.direction:
@@ -146,7 +176,7 @@ class Player(pygame.sprite.Sprite):
                         self.set_sprite(10)
                     if self.cur_sprite == 5 or self.cur_sprite == 17:
                         self.set_sprite(11)
-        else:
+        elif self.roll:
             koef = 1
             if len(self.direction) > 2:
                 koef = koef * 3 / 4
@@ -164,8 +194,8 @@ class Player(pygame.sprite.Sprite):
             if self.roll == 0:
                 self.arg = []
                 self.direction = None
-        for i in self.sprite_shadow:
-            i.pos = (self.x - 1, self.y - 1)
+        # for i in self.sprite_shadow:
+        #     i.pos = (self.x - 1, self.y - 1)
         for i in self.sprite:
             i.pos = (self.x, self.y)
 
@@ -192,4 +222,3 @@ class Player(pygame.sprite.Sprite):
         pygame.draw.rect(screen, (pygame.Color('green')),
                          (0, height // 20, width // 5 * self.xp / 10, height // 20))
         pygame.draw.rect(screen, (0, 0, 0), (0, height // 20, width // 5, height // 20), 1)
-
