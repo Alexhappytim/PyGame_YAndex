@@ -32,6 +32,9 @@ class Gun(pygame.sprite.Sprite):
                                           self.gun_y, offset_x=40)
         self.set_sprite(0)
         self.delay = 0
+        self.clip = 32
+        self.reload = False
+        self.reload_delay = 0
 
     def set_sprite(self, n):
         """Смена спрайта на n-ый по счету в своем списке"""
@@ -45,25 +48,38 @@ class Gun(pygame.sprite.Sprite):
             self.frame += 1
 
     def update(self, args, rect, is_rolling):
+        if self.reload and self.reload_delay:
+            self.reload_delay -= 1
+        elif self.reload and self.reload_delay == 0:
+            self.clip = 32
+            self.set_sprite(0)
+            self.reload = False
+        print(self.reload, self.reload_delay, self.clip)
         if "LMB" in args:
-            if self.cur_sprite:
-                self.set_sprite(0)
-            else:
-                self.set_sprite(1)
+            if self.clip:
+                if self.cur_sprite == 1:
+                    self.set_sprite(0)
+                elif self.cur_sprite == 0:
+                    self.set_sprite(1)
 
             x1, y1 = pygame.mouse.get_pos()
             x1 += (rect.x - width // 2 + 50)
             y1 += (rect.y - height // 2 + 50)
             dx = x1 + 12 - self.x
             dy = y1 + 12 - self.y
-            angle = math.degrees(math.atan2(-dy, dx) % (2 * math.pi)) + random.randint(-10,10)
+            angle = math.degrees(math.atan2(-dy, dx) % (2 * math.pi)) + random.randint(-10, 10)
             if self.delay == 5:
-                Bullet(math.cos(angle * math.pi / 180), math.sin(angle * math.pi / 180), rect)
-                self.delay = 0
+                if self.clip:
+                    Bullet(math.cos(angle * math.pi / 180), math.sin(angle * math.pi / 180), rect)
+                    self.delay = 0
+                    self.clip -= 1
+                    self.set_sprite(0)
+                elif not self.reload:
+                    self.reload_delay = 60
+                    self.reload = True
+                    self.set_sprite(2)
             else:
                 self.delay += 1
-        else:
-            self.set_sprite(0)
         if is_rolling:
             self.hand_sprite.visible = False
             for i in self.gun_sprite:

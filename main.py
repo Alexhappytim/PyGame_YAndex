@@ -15,6 +15,7 @@ level_x, level_y, start_x, start_y = generate_level(load_level('level/first.txt'
 start = True
 player = None
 pygame.event.set_allowed([pygame.QUIT, pygame.KEYDOWN, pygame.KEYUP])
+time = 0.0
 
 """---------Сетап измененного курсора----------"""
 f = open("data/cursor.txt")
@@ -32,30 +33,23 @@ class Camera:
         self.y = 0
 
     def apply(self, obj):
-        screen.fill(pygame.Color('white'))
+        screen.fill(pygame.Color('black'))
         obj.rect.x = obj.rect.x + self.dx
         obj.rect.y = obj.rect.y + self.dy
 
     def apply_tiles(self, obj):
-        screen.fill(pygame.Color('white'))
+        screen.fill(pygame.Color('black'))
         obj.rect.x = width // 2 + (obj.start_x - start_x) - (player_group.sprites()[0].x - start_x)
         obj.rect.y = height // 2 + (obj.start_y - start_y) - (player_group.sprites()[0].y - start_y)
-        while obj.rect.x + obj.rect.w < 0:
-            obj.rect.x += (level_x + 1) * tile_width
-        while obj.rect.y + obj.rect.h < 0:
-            obj.rect.y += (level_y + 1) * tile_height
-        while obj.rect.x > width:
-            obj.rect.x -= level_x * tile_width + tile_width
-        while obj.rect.y > height:
-            obj.rect.y -= level_y * tile_height + tile_height
+        # while obj.rect.x + obj.rect.w < 0:
+        #     obj.rect.x += (level_x + 1) * tile_width
+        # while obj.rect.y + obj.rect.h < 0:
+        #     obj.rect.y += (level_y + 1) * tile_height
+        # while obj.rect.x > width:
+        #     obj.rect.x -= level_x * tile_width + tile_width
+        # while obj.rect.y > height:
+        #     obj.rect.y -= level_y * tile_height + tile_height
 
-    def apply_xp(self, obj):
-        screen.fill(pygame.Color('white'))
-        obj.rect.x = -(player_group.sprites()[0].x - obj.start_p_x) + obj.start_x
-        obj.rect.y = -(player_group.sprites()[0].y - obj.start_p_y) + obj.start_y
-        # obj.rect.x = width // 2 + (obj.start_x - obj.start_p_x) - (player_group.sprites()[0].x - obj.start_p_x)
-        # obj.rect.y
-    #
     def update(self, target):
         self.dx = -(target.rect.x + target.rect.w // 2 - width // 2)
         self.dy = -(target.rect.y + target.rect.h // 2 - height // 2)
@@ -73,16 +67,32 @@ def draw_FPS(screen, fps):
     screen.blit(text, (text_x, text_y))
     pygame.draw.rect(screen, pygame.Color('green'), (text_x, text_y, text_w, text_h), 1)
 
+    text = font.render(str(int(time)), True, pygame.Color('green'))
+    text_x = width - text.get_width()
+    text_y = 30
+    text_w = text.get_width()
+    text_h = text.get_height()
+    screen.blit(text, (text_x, text_y))
+    pygame.draw.rect(screen, pygame.Color('green'), (text_x, text_y, text_w, text_h), 1)
+
+    text = font.render(str(player_group.sprites()[0].gun.clip), True, pygame.Color('green'))
+    text_x = 0
+    text_y = 80
+    text_w = text.get_width()
+    text_h = text.get_height()
+    screen.blit(text, (text_x, text_y))
+    pygame.draw.rect(screen, pygame.Color('green'), (text_x, text_y, text_w, text_h), 1)
+
 
 if start:
     health = 100
     start_screen()
     running = True
     try:
+        Player(start_x, start_y)
         for i in range(10):
             Enemy(start_x, start_y)
-        Player(start_x, start_y)
-        screen.fill(pygame.Color('white'))
+        screen.fill(pygame.Color('black'))
         all_sprites.update()
         camera = Camera()
         # print(player_group.sprites()[0])
@@ -124,10 +134,8 @@ if start:
                 for sprite in tiles_group:
                     camera.apply_tiles(sprite)
             for sprite in all_sprites:
-                if sprite not in tiles_group.sprites() and sprite not in xp_sprites.sprites():
+                if sprite not in tiles_group.sprites():
                     camera.apply(sprite)
-            for sprite in xp_sprites:
-                camera.apply_xp(sprite)
 
             # print(clock.get_fps())
             # print(camera.x, camera.y, player.rect, player.start_x, player.start_y, player.x, player.y)
@@ -148,11 +156,18 @@ if start:
             all_sprites.update()
             bullet_sprites.update()
             bullet_sprites.draw(screen)
+
+            time += 1 / FPS
+            count_enemy = 10 + int(time) // 30
+            # print(count_enemy)
+
             draw_FPS(screen, round(clock.get_fps()))
             player_group.sprites()[0].draw_health(screen)
             player_group.sprites()[0].draw_xp(screen)
+
             clock.tick(FPS)
             pygame.display.flip()
+
     except Exception as ex:
         print(ex)
         screen = pygame.display.set_mode(size)

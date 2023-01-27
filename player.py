@@ -62,7 +62,7 @@ class Player(pygame.sprite.Sprite):
         self.cur_sprite = n
 
     def update(self, *args):
-        print(self.x,self.y)
+        # print(self.x,self.y)
         # Почистим массив кнопок от противоположных
         if 's' in args[0] and 'w' in args[0]:
             del args[0][args[0].index('w')]
