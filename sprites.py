@@ -6,6 +6,9 @@ from PIL import Image
 all_sprites = pygame.sprite.Group()
 tiles_group = pygame.sprite.Group()
 player_group = pygame.sprite.Group()
+bullet_sprites = pygame.sprite.Group()
+enemy_sprites = pygame.sprite.Group()
+gun_sprites = pygame.sprite.Group()
 
 
 def rot_center(image, rect, angle):
@@ -85,7 +88,7 @@ class AnimatedSprite(pygame.sprite.Sprite):
     def update(self):
         if self.visible:
             # TODO Менять фреймрейт анимации в зависимости от колва кадров
-            if self.freq == 6:
+            if self.freq == len(self.frames):
                 self.cur_frame = (self.cur_frame + 1) % len(self.frames)
                 self.freq = 0
             else:

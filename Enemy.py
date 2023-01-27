@@ -3,8 +3,6 @@ import random
 from sprites import *
 from constant import *
 
-enemy_sprites = pygame.sprite.Group()
-
 
 class Enemy(pygame.sprite.Sprite):
     def __init__(self, pos_x, pos_y):
@@ -52,6 +50,9 @@ class Enemy(pygame.sprite.Sprite):
         self.rect = self.sprite.rect
         # self.rect = pygame.rect.Rect(self.x, self.y, self.rect.w, self.rect.h)
         if self.health < 1:
-            print(self.health)
             self.sprite.kill()
             self.kill()
+
+        for player in player_group:
+            if pygame.sprite.collide_mask(self, player):
+                player.health -= 0.5

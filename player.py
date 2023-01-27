@@ -6,40 +6,42 @@ import math
 from constant import *
 
 
-class Player:
+class Player(pygame.sprite.Sprite):
     def __init__(self, pos_x, pos_y):
+        super().__init__(player_group)
         self.x = pos_x
         self.y = pos_y
         self.start_x = pos_x
         self.start_y = pos_y
         self.sprite_shadow = []
         self.sprite = []
-        self.image = [["animation/walking_with_weapon/back.png", 6, 1, False],
-                      ["animation/walking_with_weapon/front_45.png", 6, 1, True],
-                      ["animation/walking_with_weapon/front.png", 6, 1, False],
-                      ["animation/walking_with_weapon/front_45.png", 6, 1, False],
-                      ["animation/walking_with_weapon/back_45.png", 6, 1, False],
-                      ["animation/walking_with_weapon/back_45.png", 6, 1, True],
-                      ["animation/idle_with_weapon/back.png", 6, 1, False],
-                      ["animation/idle_with_weapon/front_45.png", 4, 1, True],
-                      ["animation/idle_with_weapon/front.png", 6, 1, False],
-                      ["animation/idle_with_weapon/front_45.png", 4, 1, False],
-                      ["animation/idle_with_weapon/back_45.png", 4, 1, False],
-                      ["animation/idle_with_weapon/back_45.png", 4, 1, True],
-                      ["animation/roll/back.png", 9, 1, False],
-                      ["animation/roll/front_45.png", 9, 1, True],
-                      ["animation/roll/front.png", 9, 1, False],
-                      ["animation/roll/front_45.png", 9, 1, False],
-                      ["animation/roll/back_45.png", 9, 1, False],
-                      ["animation/roll/back_45.png", 9, 1, True]
-                      ]
-        for i in self.image:
+        self.images = [["animation/walking_with_weapon/back.png", 6, 1, False],
+                       ["animation/walking_with_weapon/front_45.png", 6, 1, True],
+                       ["animation/walking_with_weapon/front.png", 6, 1, False],
+                       ["animation/walking_with_weapon/front_45.png", 6, 1, False],
+                       ["animation/walking_with_weapon/back_45.png", 6, 1, False],
+                       ["animation/walking_with_weapon/back_45.png", 6, 1, True],
+                       ["animation/idle_with_weapon/back.png", 6, 1, False],
+                       ["animation/idle_with_weapon/front_45.png", 4, 1, True],
+                       ["animation/idle_with_weapon/front.png", 6, 1, False],
+                       ["animation/idle_with_weapon/front_45.png", 4, 1, False],
+                       ["animation/idle_with_weapon/back_45.png", 4, 1, False],
+                       ["animation/idle_with_weapon/back_45.png", 4, 1, True],
+                       ["animation/roll/back.png", 9, 1, False],
+                       ["animation/roll/front_45.png", 9, 1, True],
+                       ["animation/roll/front.png", 9, 1, False],
+                       ["animation/roll/front_45.png", 9, 1, False],
+                       ["animation/roll/back_45.png", 9, 1, False],
+                       ["animation/roll/back_45.png", 9, 1, True]
+                       ]
+        for i in self.images:
             self.sprite_shadow.append(
                 AnimatedSprite(load_image(i[0], front=0), i[1], i[2], self.x, self.y, i[3],
                                scale=3.5))
             self.sprite.append(
                 AnimatedSprite(load_image(i[0]), i[1], i[2], self.x, self.y, i[3], scale=3))
 
+        self.mask = pygame.mask.from_surface(self.sprite[0].image)
         self.cur_sprite = 2
         self.set_sprite(2)
         self.speed = 4
@@ -161,11 +163,21 @@ class Player:
             i.pos = (self.x - 1, self.y - 1)
         for i in self.sprite:
             i.pos = (self.x, self.y)
+
+        # self.rect = self.sprite[0].rect
         self.rect = pygame.rect.Rect(self.x, self.y, self.rect.w, self.rect.h)
         self.gun.update(args[0], self.rect, self.roll)
-        return args[0]
+        if self.health <= 0:
+            for gun in gun_sprites:
+                gun.killed()
+
+            for i in self.sprite + self.sprite_shadow:
+                i.kill()
+
+            for i in player_group:
+                i.kill()
+        return args[0], self.health
 
     def draw_health(self, screen):
         pygame.draw.rect(screen, (pygame.Color('red')), (0, 0, width // 5 * self.health / 100, height // 20))
         pygame.draw.rect(screen, (0, 0, 0), (0, 0, width // 5, height // 20), 1)
-

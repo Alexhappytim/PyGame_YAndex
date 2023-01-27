@@ -6,8 +6,9 @@ from bullet import *
 start_x, start_y = None, None
 
 
-class Gun:
+class Gun(pygame.sprite.Sprite):
     def __init__(self, pos_x, pos_y):
+        super().__init__(gun_sprites)
         self.delta = [0, 15]
         self.x = pos_x + self.delta[0]
         self.y = pos_y + self.delta[1]
@@ -86,4 +87,9 @@ class Gun:
             for i in self.gun_sprite:
                 i.pos = pygame.math.Vector2(self.gun_x, self.gun_y)
         self.rect = pygame.rect.Rect(self.x, self.y, self.rect.w, self.rect.h)
+
+    def killed(self):
+        for i in self.gun_sprite + [self.hand_sprite]:
+            i.kill()
+        self.kill()
 
