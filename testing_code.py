@@ -12,10 +12,10 @@ screen_rect = (0, 0, width, height)
 class Particle(pygame.sprite.Sprite):
     # сгенерируем частицы разного размера
     fire = [load_image("animation/death/blood.png")]
-    fire = [load_image("decoration/bullet.png")]
+    fire = [load_image("decoration/bullet_1.png")]
 
-    for scale in (4, 5, 10):
-        fire.append(pygame.transform.scale(fire[0], (scale * 2, scale)))
+    for scale in (10, 10):
+        fire.append(pygame.transform.scale(fire[0], (scale, scale)))
 
     def __init__(self, pos, dx, dy):
         super().__init__(all_sprites)

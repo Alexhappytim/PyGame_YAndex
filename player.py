@@ -162,7 +162,7 @@ class Player:
         for i in self.sprite:
             i.pos = (self.x, self.y)
         self.rect = pygame.rect.Rect(self.x, self.y, self.rect.w, self.rect.h)
-        self.gun.update(args[0], self.x, self.y, self.roll)
+        self.gun.update(args[0], self.rect, self.roll)
         return args[0]
 
     def draw_health(self, screen):

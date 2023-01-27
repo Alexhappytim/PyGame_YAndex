@@ -1,10 +1,14 @@
 import random
+
 from sprites import *
 from constant import *
 
+enemy_sprites = pygame.sprite.Group()
 
-class Enemy:
+
+class Enemy(pygame.sprite.Sprite):
     def __init__(self, pos_x, pos_y):
+        super().__init__(enemy_sprites)
         self.x, self.y = pos_x, pos_y
         print(pos_x, pos_y)
         while pos_x - width // 2 < self.x < pos_x + width // 2 and pos_y - height // 2 < self.y < pos_y + height // 2:
@@ -13,15 +17,14 @@ class Enemy:
 
         self.start_x = self.x
         self.start_y = self.y
-        self.sprite = [
-            AnimatedSprite(load_image("animation/enemy/front.png"), 2, 1, self.x,
-                           self.y),
-        ]
-        self.rect = self.sprite[0].rect.move(self.x, self.y)
-        self.prev_sprite = 2
+        self.sprite = AnimatedSprite(load_image("animation/enemy/front.png"), 2, 1, self.x, self.y)
+        self.rect = self.sprite.rect.move(self.x, self.y)
+        self.mask = pygame.mask.from_surface(self.sprite.image)
+
         self.speed = 4
         self.error = 2
         self.go = 50
+        self.health = 10
 
     def update(self, x, y):
         args = [[]]
@@ -45,7 +48,10 @@ class Enemy:
             self.x += int(random.randrange(self.speed - self.error, self.speed + self.error) * koef)
         if "w" in args[0]:
             self.y -= int(random.randrange(self.speed - self.error, self.speed + self.error) * koef)
-        for i in self.sprite:
-            i.pos = (self.x, self.y)
-
-        self.rect = pygame.rect.Rect(self.x, self.y, self.rect.w, self.rect.h)
+        self.sprite.pos = (self.x, self.y)
+        self.rect = self.sprite.rect
+        # self.rect = pygame.rect.Rect(self.x, self.y, self.rect.w, self.rect.h)
+        if self.health < 1:
+            print(self.health)
+            self.sprite.kill()
+            self.kill()

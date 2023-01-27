@@ -5,6 +5,7 @@ from map import *
 import random
 from constant import *
 from strart_screen import *
+from bullet import *
 
 
 pygame.init()
@@ -37,9 +38,9 @@ class Camera:
         obj.rect.x = width // 2 + (obj.start_x - start_x) - (player.x - start_x)
         obj.rect.y = height // 2 + (obj.start_y - start_y) - (player.y - start_y)
         while obj.rect.x + obj.rect.w < 0:
-            obj.rect.x += level_x * tile_width
+            obj.rect.x += (level_x + 1) * tile_width
         while obj.rect.y + obj.rect.h < 0:
-            obj.rect.y += level_y * tile_height
+            obj.rect.y += (level_y + 1) * tile_height
         while obj.rect.x > width:
             obj.rect.x -= level_x * tile_width + tile_width
         while obj.rect.y > height:
@@ -67,9 +68,8 @@ def draw_FPS(screen, fps):
 if start:
     start_screen()
     running = True
-    enemy = []
-    for i in range(1):
-        enemy.append(Enemy(start_x, start_y))
+    for i in range(10):
+        Enemy(start_x, start_y)
     player = Player(start_x, start_y)
     screen.fill(pygame.Color('white'))
     all_sprites.update()
@@ -78,8 +78,8 @@ if start:
     for sprite in all_sprites:
         if sprite not in tiles_group.sprites():
             camera.apply(sprite)
-    for sprite in tiles_group:
-        camera.apply_tiles(sprite)
+        else:
+            camera.apply_tiles(sprite)
     while running:
         # screen.fill(pygame.Color('white'))
         for event in pygame.event.get():
@@ -101,8 +101,8 @@ if start:
         if pygame.mouse.get_pressed()[0]:
             ar.append("LMB")
         ar = player.update(ar)
-        for i in enemy:
-            i.update(player.x, player.y)
+        for enemy in enemy_sprites:
+            enemy.update(player.x, player.y)
         camera.update(player)
         if len(ar) - ar.count('LMB') > 0:
             for sprite in tiles_group:
@@ -127,9 +127,12 @@ if start:
         # pygame.draw.circle(screen, (255, 0, 0), [int(i) for i in player.gun.hand_sprite.pos], 3)
         all_sprites.draw(screen)
         all_sprites.update()
+        bullet_sprites.update()
+        bullet_sprites.draw(screen)
         draw_FPS(screen, round(clock.get_fps()))
         player.draw_health(screen)
         clock.tick(FPS)
         pygame.display.flip()
+        print('enemy', len(enemy_sprites))
 else:
     print('Не подходит')
