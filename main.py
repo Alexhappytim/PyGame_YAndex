@@ -64,7 +64,6 @@ def draw_FPS(screen, fps):
     pygame.draw.rect(screen, (0, 0, 0), (text_x, text_y,
                                            text_w, text_h), 1)
 
-
 if start:
     start_screen()
     running = True
