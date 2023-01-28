@@ -6,7 +6,7 @@ from sound import *
 clock = pygame.time.Clock()
 FPS = 60
 
-size = height, width = 500, 500
+size = height, width = 750, 750
 tile_width = tile_height = 256
 min_enemy = 10
 max_enemy = 30

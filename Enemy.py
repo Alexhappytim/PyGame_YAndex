@@ -2,11 +2,13 @@ import random
 
 from sprites import *
 from constant import *
+
+
 # from levels import *
 
 
 class Enemy(pygame.sprite.Sprite):
-    def __init__(self, pos_x, pos_y):
+    def __init__(self, pos_x, pos_y, time):
         super().__init__(enemy_sprites)
         self.x, self.y = pos_x, pos_y
         # print(pos_x, pos_y)
@@ -20,12 +22,11 @@ class Enemy(pygame.sprite.Sprite):
         self.rect = self.sprite.rect.move(self.x, self.y)
         self.mask = pygame.mask.from_surface(self.sprite.image)
 
-        self.speed = 2
+        self.speed = 2 + int(time/45)
         self.error = 2
-        self.go = 50
-        self.health = 10
-        self.attack = 10
-
+        self.go = 40
+        self.health = 10 + int(time/45) * 2
+        self.attack = 10 + int(time/45)
 
     def update(self, rect):
         x, y = rect.x, rect.y
@@ -69,6 +70,7 @@ class Enemy(pygame.sprite.Sprite):
             for player in player_group:
                 player.xp += 1
                 if player.xp > player.max_xp:
+                    player.level_up()
                     player.health = min(player.max_health, player.health + 10 * (player.xp // player.max_xp))
                     player.xp %= player.max_xp
             play_sound(blob_die_sound)

@@ -1,5 +1,3 @@
-import pygame
-
 from gun import Gun
 from sprites import *
 import math
@@ -50,11 +48,12 @@ class Player(pygame.sprite.Sprite):
         self.direction = None
         self.gun = Gun(self.x, self.y)
         self.health = 100
-        self.max_xp, self.max_health = 10, 100
+        self.max_xp, self.max_health = 1, 100
         self.arg = []
         self.xp = 0
         self.walk_state = 0
         self.damage_frame = 0
+        self.leveled_up = False
 
     def set_sprite(self, n):
         for _ in [self.sprite, self.sprite_shadow]:
@@ -187,9 +186,9 @@ class Player(pygame.sprite.Sprite):
                     else:
                         self.walk_state += 1
         elif self.roll:
-            koef = 1
+            koef = 1.25
             if len(self.direction) > 2:
-                koef = koef * 3 / 4
+                koef = koef * 0.7
             if "s" in self.direction:
                 self.y += int(self.speed * koef)
             if "a" in self.direction:
@@ -241,4 +240,14 @@ class Player(pygame.sprite.Sprite):
             play_sound(hurt_sound)
             self.damage_frame = 19
         else:
-            self.damage_frame -=1
+            self.damage_frame -= 1
+
+    def level_up(self):
+        play_sound(levelup_sound)
+        self.leveled_up = True
+        print(2)
+
+    def check_level_up(self):
+        t = self.leveled_up
+        # self.leveled_up = False
+        return t

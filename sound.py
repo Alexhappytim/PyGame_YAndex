@@ -10,6 +10,7 @@ roll1_sound = pygame.mixer.Sound('data/sounds/dodge_01.wav')
 roll2_sound = pygame.mixer.Sound('data/sounds/dodge_02.wav')
 walk_sound = pygame.mixer.Sound('data/sounds/step/boot_stone_01.wav')
 hurt_sound = pygame.mixer.Sound('data/sounds/hurt.wav')
+levelup_sound = pygame.mixer.Sound('data/sounds/levelup.wav')
 sound_queue = []
 
 
@@ -18,7 +19,10 @@ def play_sound(sound):
 
 
 def sound_update():
-    print(sound_queue)
+    # print(sound_queue)
+    if levelup_sound in sound_queue:
+        pygame.mixer.stop()
+        levelup_sound.play()
     if sound_queue:
         sound_queue[0].play(0)
         del sound_queue[0]
