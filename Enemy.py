@@ -75,8 +75,5 @@ class Enemy(pygame.sprite.Sprite):
 
         for player in player_group:
             if pygame.sprite.collide_mask(self, player):
-                print(123)
                 if not player.roll:
-                    print(321)
-                    player.health -= 0.5
-                    print('****', player.health)
+                    player.health -= self.attack
