@@ -16,6 +16,7 @@ start = True
 player = None
 pygame.event.set_allowed([pygame.QUIT, pygame.KEYDOWN, pygame.KEYUP])
 time = 0.0
+count_enemy = count_enemy
 
 """---------Сетап измененного курсора----------"""
 f = open("data/cursor.txt")
@@ -84,6 +85,17 @@ def draw_FPS(screen, fps):
     pygame.draw.rect(screen, pygame.Color('green'), (text_x, text_y, text_w, text_h), 1)
 
 
+def draw_counted(screen):
+    font = pygame.font.Font(None, 40)
+    text = font.render(str(time), True, pygame.Color('red'))
+    text_x = width - text.get_width()
+    text_y = 0
+    text_w = text.get_width()
+    text_h = text.get_height()
+    screen.blit(text, (text_x, text_y))
+    pygame.draw.rect(screen, pygame.Color('green'), (text_x, text_y, text_w, text_h), 1)
+
+
 if start:
     health = 100
     start_screen()
@@ -137,16 +149,6 @@ if start:
                 if sprite not in tiles_group.sprites():
                     camera.apply(sprite)
 
-            # print(clock.get_fps())
-            # print(camera.x, camera.y, player.rect, player.start_x, player.start_y, player.x, player.y)
-
-            # print(camera.dx, camera.dy, tiles_group.sprites()[0].rect, tiles_group.sprites()[0].start_x)
-            if len(xp_sprites.sprites()) > 0:
-                print(player_group.sprites()[0].rect, xp_sprites.sprites()[0].rect)
-            # print(tiles_group.sprites())
-            # for i in all_sprites:
-            #     if i == all_sprites.sprites()
-            #     print(i)
             """--------------------------------------"""
 
             """Отладочные координаты оси вращения оружия"""
@@ -180,9 +182,10 @@ if start:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
-            print(player.rect, player.visible)
+            # print(player.rect, player.visible)
+            draw_counted(screen)
             player.update()
-            screen.blit(player.image, (250 - 24, 250 - 31))
+            screen.blit(player.image, (width // 2 - player.rect.w, height // 2 - player.rect.h))
             clock.tick(FPS)
             pygame.display.flip()
 else:
