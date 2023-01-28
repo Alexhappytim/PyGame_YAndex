@@ -23,7 +23,7 @@ class Xp(pygame.sprite.Sprite):
     def update(self):
         # print(self.rect, self.start_x, self.start_y, player_group.sprites()[0].rect,  player_group.sprites()[0].xp)
 
-
+        for player in player_group:
             if pygame.sprite.collide_mask(self, player):
                 player.xp += 1
                 self.kill()
