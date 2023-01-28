@@ -16,7 +16,7 @@ start = True
 player = None
 pygame.event.set_allowed([pygame.QUIT, pygame.KEYDOWN, pygame.KEYUP])
 time = 0.0
-count_enemy = count_enemy
+count_enemy = min_enemy
 
 """---------Сетап измененного курсора----------"""
 f = open("data/cursor.txt")
@@ -160,7 +160,7 @@ if start:
             bullet_sprites.draw(screen)
 
             time += 1 / FPS
-            count_enemy = 10 + int(time) // 30
+            count_enemy = min(max_enemy, min_enemy + int(time) // 30)
             # print(count_enemy)
 
             draw_FPS(screen, round(clock.get_fps()))
