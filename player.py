@@ -53,6 +53,8 @@ class Player(pygame.sprite.Sprite):
         self.max_xp, self.max_health = 10, 100
         self.arg = []
         self.xp = 0
+        self.walk_state = 0
+        self.damage_frame = 0
 
     def set_sprite(self, n):
         for _ in [self.sprite, self.sprite_shadow]:
@@ -112,6 +114,7 @@ class Player(pygame.sprite.Sprite):
                 self.arg += args[0]
                 self.roll = 56
                 self.direction = args[0]
+                play_sound(roll1_sound)
                 if self.direction:
                     if "LBM" in self.direction:
                         self.direction.remove("LBM")
@@ -177,6 +180,12 @@ class Player(pygame.sprite.Sprite):
                         self.set_sprite(10)
                     if self.cur_sprite == 5 or self.cur_sprite == 17:
                         self.set_sprite(11)
+                else:
+                    if self.walk_state == 20:
+                        play_sound(walk_sound)
+                        self.walk_state = 0
+                    else:
+                        self.walk_state += 1
         elif self.roll:
             koef = 1
             if len(self.direction) > 2:
@@ -195,6 +204,8 @@ class Player(pygame.sprite.Sprite):
             if self.roll == 0:
                 self.arg = []
                 self.direction = None
+            if self.roll == 15:
+                play_sound(roll2_sound)
         # for i in self.sprite_shadow:
         #     i.pos = (self.x - 1, self.y - 1)
         for i in self.sprite:
@@ -223,3 +234,11 @@ class Player(pygame.sprite.Sprite):
         pygame.draw.rect(screen, (pygame.Color('green')),
                          (0, height // 20, width // 5 * min(1, self.xp / self.max_xp), height // 20))
         pygame.draw.rect(screen, (0, 0, 0), (0, height // 20, width // 5, height // 20), 1)
+
+    def damaged(self, damage):
+        if self.damage_frame == 0:
+            self.health -= damage
+            play_sound(hurt_sound)
+            self.damage_frame = 19
+        else:
+            self.damage_frame -=1

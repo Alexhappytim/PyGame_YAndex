@@ -10,7 +10,8 @@ from constant import *
 from strart_screen import *
 from bullet import *
 
-pygame.init()
+
+
 level_x, level_y, start_x, start_y = generate_level(load_level('level/first.txt'))
 start = True
 player = None
@@ -166,6 +167,7 @@ if start:
             draw_FPS(screen, round(clock.get_fps()))
             player_group.sprites()[0].draw_health(screen)
             player_group.sprites()[0].draw_xp(screen)
+            sound_update()
 
             clock.tick(FPS)
             pygame.display.flip()

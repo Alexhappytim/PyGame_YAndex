@@ -1,5 +1,7 @@
 import pygame
 from sprites import load_image
+from sound import *
+
 
 clock = pygame.time.Clock()
 FPS = 60

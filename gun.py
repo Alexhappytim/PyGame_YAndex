@@ -18,7 +18,7 @@ class Gun(pygame.sprite.Sprite):
         self.start_x = pos_x
         self.start_y = pos_y
         self.cur_sprite = 0
-        self.frame = 0
+        self.frame = 5
         self.gun_sprite = [
             AnimatedSprite(load_image("animation/guns/uzi/uzi_idle_001.png"), 1, 1, self.gun_x,
                            self.gun_y, offset_x=50),
@@ -38,7 +38,7 @@ class Gun(pygame.sprite.Sprite):
 
     def set_sprite(self, n):
         """Смена спрайта на n-ый по счету в своем списке"""
-        if self.frame == 5:
+        if self.frame == 5 or n == 2:
             for i in self.gun_sprite:
                 i.visible = False
             self.gun_sprite[n].visible = True
@@ -50,11 +50,12 @@ class Gun(pygame.sprite.Sprite):
     def update(self, args, rect, is_rolling):
         if self.reload and self.reload_delay:
             self.reload_delay -= 1
+            self.set_sprite(2)
         elif self.reload and self.reload_delay == 0:
             self.clip = 32
+            self.frame = 5
             self.set_sprite(0)
             self.reload = False
-        print(self.reload, self.reload_delay, self.clip)
         if "LMB" in args:
             if self.clip:
                 if self.cur_sprite == 1:
@@ -71,10 +72,12 @@ class Gun(pygame.sprite.Sprite):
             if self.delay == 5:
                 if self.clip:
                     Bullet(math.cos(angle * math.pi / 180), math.sin(angle * math.pi / 180), rect)
+                    play_sound(shot_sound)
                     self.delay = 0
                     self.clip -= 1
                     self.set_sprite(0)
                 elif not self.reload:
+                    play_sound(reload_sound)
                     self.reload_delay = 60
                     self.reload = True
                     self.set_sprite(2)
@@ -86,9 +89,8 @@ class Gun(pygame.sprite.Sprite):
                 i.visible = False
         else:
             self.hand_sprite.visible = True
-            self.set_sprite(self.cur_sprite)
+            self.gun_sprite[self.cur_sprite].visible = True
             x1, y1 = pygame.mouse.get_pos()
-            # print(x1, y1)
             x1 += (rect.x - width // 2 + 50)
             y1 += (rect.y - height // 2 + 50)
             dx = x1 + 12 - self.x

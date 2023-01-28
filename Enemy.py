@@ -24,7 +24,8 @@ class Enemy(pygame.sprite.Sprite):
         self.error = 2
         self.go = 50
         self.health = 10
-        self.attack = 0.5
+        self.attack = 10
+
 
     def update(self, rect):
         x, y = rect.x, rect.y
@@ -70,10 +71,11 @@ class Enemy(pygame.sprite.Sprite):
                 if player.xp > player.max_xp:
                     player.health = min(player.max_health, player.health + 10 * (player.xp // player.max_xp))
                     player.xp %= player.max_xp
+            play_sound(blob_die_sound)
             self.sprite.kill()
             self.kill()
 
         for player in player_group:
             if pygame.sprite.collide_mask(self, player):
                 if not player.roll:
-                    player.health -= self.attack
+                    player.damaged(self.attack)
