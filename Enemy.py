@@ -69,10 +69,11 @@ class Enemy(pygame.sprite.Sprite):
             self.rect.y = self.rect.y + dy
             for player in player_group:
                 player.xp += 1
-                if player.xp > player.max_xp:
+                if player.xp >= player.max_xp:
                     player.level_up()
-                    player.health = min(player.max_health, player.health + 10 * (player.xp // player.max_xp))
+                    player.health = min(player.max_health, player.health + 15 * (player.xp // player.max_xp))
                     player.xp %= player.max_xp
+                    player.max_xp += 1
             play_sound(blob_die_sound)
             self.sprite.kill()
             self.kill()

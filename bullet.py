@@ -6,11 +6,11 @@ class Bullet(pygame.sprite.Sprite):
     image = load_image("decoration/bullet_1.png")
     pygame.transform.scale(image, (10, 10))
 
-    def __init__(self, x, y, rect):
+    def __init__(self, x, y, rect, attack):
         super().__init__(bullet_sprites)
         self.speed_x = x * 10
         self.speed_y = -y * 10
-        self.attack = 1
+        self.attack = attack
         self.image = Bullet.image
         self.rect = self.image.get_rect()
         self.rect.x, self.rect.y = (width // 2 - rect.w // 2 + self.rect.w * x * 10, height // 2 - rect.h // 2 - self.rect.h * y * 10)

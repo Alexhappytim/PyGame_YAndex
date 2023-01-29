@@ -38,6 +38,9 @@ class Gun(pygame.sprite.Sprite):
 
         self.reload_delay_par = 60
         self.delay_par = 5
+        self.spread = 10
+        self.attack = 1
+        self.clip_max = 32
 
     def set_sprite(self, n):
         """Смена спрайта на n-ый по счету в своем списке"""
@@ -54,8 +57,8 @@ class Gun(pygame.sprite.Sprite):
         if self.reload and self.reload_delay:
             self.reload_delay -= 1
             self.set_sprite(2)
-        elif self.reload and self.reload_delay == 0:
-            self.clip = 32
+        elif self.reload and self.reload_delay <= 0:
+            self.clip = self.clip_max
             self.frame = 5
             self.set_sprite(0)
             self.reload = False
@@ -71,10 +74,10 @@ class Gun(pygame.sprite.Sprite):
             y1 += (rect.y - height // 2 + 50)
             dx = x1 + 12 - self.x
             dy = y1 + 12 - self.y
-            angle = math.degrees(math.atan2(-dy, dx) % (2 * math.pi)) + random.randint(-10, 10)
-            if self.delay == self.delay_par:
+            angle = math.degrees(math.atan2(-dy, dx) % (2 * math.pi)) + random.randint(-self.spread, self.spread)
+            if self.delay >= self.delay_par:
                 if self.clip:
-                    Bullet(math.cos(angle * math.pi / 180), math.sin(angle * math.pi / 180), rect)
+                    Bullet(math.cos(angle * math.pi / 180), math.sin(angle * math.pi / 180), rect, self.attack)
                     play_sound(shot_sound)
                     self.delay = 0
                     self.clip -= 1

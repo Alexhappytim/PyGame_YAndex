@@ -48,7 +48,7 @@ class Player(pygame.sprite.Sprite):
         self.direction = None
         self.gun = Gun(self.x, self.y)
         self.health = 100
-        self.max_xp, self.max_health = 1, 100
+        self.max_xp, self.max_health = 10, 100
         self.arg = []
         self.xp = 0
         self.walk_state = 0
@@ -226,12 +226,12 @@ class Player(pygame.sprite.Sprite):
 
     def draw_health(self, screen):
         pygame.draw.rect(screen, (pygame.Color('red')),
-                         (0, 0, width // 5 * min(1, self.health / self.max_health), height // 20))
-        pygame.draw.rect(screen, (0, 0, 0), (0, 0, width // 5, height // 20), 1)
+                         (0, 0, width // 5 * min(1, self.health / self.max_health) * self.max_health/100, height // 20))
+        pygame.draw.rect(screen, (0, 0, 0), (0, 0, width // 5 * self.max_health/100, height // 20), 1)
 
     def draw_xp(self, screen):
         pygame.draw.rect(screen, (pygame.Color('green')),
-                         (0, height // 20, width // 5 * min(1, self.xp / self.max_xp), height // 20))
+                         (0, height // 20, width // 5 * min(1, self.xp / self.max_xp) , height // 20))
         pygame.draw.rect(screen, (0, 0, 0), (0, height // 20, width // 5, height // 20), 1)
 
     def damaged(self, damage):
