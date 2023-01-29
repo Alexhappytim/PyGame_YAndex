@@ -8,14 +8,16 @@ def terminate():
 
 
 def start_screen():
-    intro_text = ["ЗАСТАВКА", "",
-                  "Правила игры",
-                  "Если в правилах несколько строк,",
-                  "приходится выводить их построчно"]
+    intro_text = ["Красавчик в беде, липкая библиотека", "",
+                  "Как играть",
+                  "Ходи на WASD",
+                  "Стреляй левой кнопкой мышки",
+                  "Делай перекаты на пробел",
+                  "И помоги красавчику выжить подольше!"]
 
-    fon = pygame.transform.scale(load_image('decoration/pt.png'), (width, height))
-    screen.blit(fon, (0, 0))
-    font = pygame.font.Font(None, 30)
+    fon = pygame.transform.scale(load_image('background.png'), (500,200))
+    screen.blit(fon, (0, 500))
+    font = pygame.font.Font("data/pix_font.ttf", 25)
     text_coord = 50
     for line in intro_text:
         string_rendered = font.render(line, 1, pygame.Color('white'))
