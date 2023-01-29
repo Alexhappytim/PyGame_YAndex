@@ -6,6 +6,10 @@ from PIL import Image
 all_sprites = pygame.sprite.Group()
 tiles_group = pygame.sprite.Group()
 player_group = pygame.sprite.Group()
+bullet_sprites = pygame.sprite.Group()
+enemy_sprites = pygame.sprite.Group()
+gun_sprites = pygame.sprite.Group()
+xp_sprites = pygame.sprite.Group()
 
 
 def rot_center(image, rect, angle):
@@ -21,7 +25,8 @@ def load_image(name, front=1, colorkey=None):
         print(f"Файл с изображением '{fullname}' не найден")
         sys.exit()
     if front == 0:
-        fullname_new = '.'.join(i for i in fullname.split('.')[:-1]) + '#.' + fullname.split('.')[-1]
+        fullname_new = '.'.join(i for i in fullname.split('.')[:-1]) + '#.' + fullname.split('.')[
+            -1]
         if not os.path.isfile(fullname_new):
             img = Image.open(fullname).convert('RGBA')
             pixdata = img.load()
@@ -33,9 +38,9 @@ def load_image(name, front=1, colorkey=None):
             img.save(fullname_new)
             img.close()
         fullname = fullname_new
-    image = pygame.image.load(fullname)
+    image = pygame.image.load(fullname).convert_alpha()
     if colorkey is not None:
-        image = image.convert()
+        image = image.convert_alpha()
         if colorkey == -1:
             colorkey = image.get_at((0, 0))
         image.set_colorkey(colorkey)
@@ -77,8 +82,9 @@ class AnimatedSprite(pygame.sprite.Sprite):
 
     def rotate(self):
         """Вращение спрайта вокруг определенной точки"""
-        self.image = pygame.transform.rotozoom(pygame.transform.flip(self.frames[self.cur_frame], False, self.rot_flip),
-                                               -self.angle, 1)
+        self.image = pygame.transform.rotozoom(
+            pygame.transform.flip(self.frames[self.cur_frame], False, self.rot_flip),
+            -self.angle, 1)
         offset_rotated = self.offset.rotate(self.angle)
         self.rect = self.image.get_rect(center=self.pos + offset_rotated)
 
