@@ -1,4 +1,5 @@
 import pygame
+from PIL import Image
 
 from player import Player
 from sprites import *
