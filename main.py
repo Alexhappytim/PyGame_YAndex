@@ -226,7 +226,7 @@ if start:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
-            # print(player.rect, player.visible)
+
             draw_counted(screen)
             player.update()
             screen.blit(player.image, (width // 2 - player.rect.w, height // 2 - player.rect.h))
